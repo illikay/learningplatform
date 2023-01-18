@@ -3,13 +3,15 @@ package com.kayikci.learningplatform;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootVersion;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+
+import jakarta.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.List;
+
 
 @Component
 public class DataLoader {
@@ -35,6 +37,7 @@ public class DataLoader {
 
     @PostConstruct
     private void loadData() {
+        System.out.println("hier wichtig: " + SpringBootVersion.getVersion());
         repository.deleteAll();
 
         MyDao myDao = new MyDao(sessionFactory);
