@@ -16,7 +16,7 @@ import java.util.Date;
 @Component
 public class DataLoader {
 
-    //git commit 5
+
     private final ExamRepository repository;
     private final QuestionRepository questionRepository;
 
@@ -37,7 +37,7 @@ public class DataLoader {
 
     @PostConstruct
     private void loadData() {
-        System.out.println("hier wichtig: " + SpringBootVersion.getVersion());
+
         repository.deleteAll();
 
         MyDao myDao = new MyDao(sessionFactory);
