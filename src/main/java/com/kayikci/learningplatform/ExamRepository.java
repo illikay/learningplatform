@@ -1,5 +1,6 @@
 package com.kayikci.learningplatform;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ExamRepository extends CrudRepository<Exam, Long> {}
+
+public interface ExamRepository extends JpaRepository<Exam, Long> {}

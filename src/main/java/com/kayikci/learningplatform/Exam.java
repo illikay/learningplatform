@@ -19,7 +19,7 @@ import java.util.Set;
 public class Exam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long examId;
     private String pruefungsName, info, beschreibung;
     private String erstellDatum;
 
@@ -27,8 +27,7 @@ public class Exam {
 
     private int anzahlFragen;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private Set<Question> questions;
+
 
 
 

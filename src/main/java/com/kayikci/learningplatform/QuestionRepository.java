@@ -1,6 +1,13 @@
 package com.kayikci.learningplatform;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface QuestionRepository extends CrudRepository<Question, Long> {
+
+import java.util.Optional;
+
+public interface QuestionRepository extends JpaRepository<Question, Long> {
+    Page<Question> findByExamId(Long examId, Pageable pageable);
+    Optional<Question> findByIdAndExamId(Long questionId, Long examId);
 }

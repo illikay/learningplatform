@@ -37,7 +37,7 @@ public class DataLoader {
 
     @PostConstruct
     private void loadData() {
-        //commit nach ssh
+
         repository.deleteAll();
 
         MyDao myDao = new MyDao(sessionFactory);

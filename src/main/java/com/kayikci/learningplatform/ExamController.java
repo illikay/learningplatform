@@ -1,6 +1,8 @@
 package com.kayikci.learningplatform;
 
 import lombok.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 
@@ -14,24 +16,23 @@ import java.util.Optional;
 public class ExamController {
     @NonNull
     private final ExamRepository repository;
-    private final QuestionRepository questionRepository;
+
 
     public ExamController(ExamRepository repository, QuestionRepository questionRepository) {
         this.repository = repository;
-        this.questionRepository = questionRepository;
 
 
 
     }
 
     @GetMapping
-    Iterable<Exam> getExams() {
-        return repository.findAll();
+    public Page<Exam> getAllPosts(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    Optional<Exam> getExamById(@PathVariable Long id) {
-        return repository.findById(id);
+    Optional<Exam> getExamById(@PathVariable Long examId) {
+        return repository.findById(examId);
     }
 
     @PostMapping
@@ -41,8 +42,8 @@ public class ExamController {
 
 
     @PutMapping("/{id}")
-    ResponseEntity<Exam> putExam(@PathVariable Long id, @RequestBody Exam newExam) {
-        return repository.findById(id)
+    ResponseEntity<Exam> putExam(@PathVariable Long examId, @RequestBody Exam newExam) {
+        return repository.findById(examId)
                 .map(oldExam -> {
                     oldExam.setPruefungsName(newExam.getPruefungsName());
                     oldExam.setInfo(newExam.getInfo());
@@ -50,12 +51,11 @@ public class ExamController {
                     oldExam.setErstellDatum(newExam.getErstellDatum());
                     oldExam.setAenderungsDatum(newExam.getAenderungsDatum());
                     oldExam.setAnzahlFragen(newExam.getAnzahlFragen());
-                    oldExam.setQuestions(newExam.getQuestions());
                     return new ResponseEntity<>(repository.save(oldExam), HttpStatus.OK);
 
                 })
                 .orElseGet(() -> {
-                    newExam.setId(id);
+                    newExam.setExamId(examId);
                     return  new ResponseEntity<>(repository.save(newExam), HttpStatus.CREATED);
                 });
 
@@ -65,9 +65,9 @@ public class ExamController {
 
 
     @DeleteMapping("/{id}")
-    void deleteExam(@PathVariable Long id) {
+    void deleteExam(@PathVariable Long examId) {
 
-        repository.deleteById(id);
+        repository.deleteById(examId);
     }
 }
 
