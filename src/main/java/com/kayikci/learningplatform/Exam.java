@@ -7,10 +7,6 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 
-
-
-import java.util.Set;
-
 @Entity
 @Data
 @Table(name="Exam")
@@ -19,7 +15,7 @@ import java.util.Set;
 public class Exam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long examId;
+    private Long id;
     private String pruefungsName, info, beschreibung;
     private String erstellDatum;
 

@@ -1,44 +1,37 @@
 package com.kayikci.learningplatform;
 
 
+import lombok.NonNull;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootVersion;
 import org.springframework.stereotype.Component;
 
 
 import jakarta.annotation.PostConstruct;
-import java.text.SimpleDateFormat;
-
-import java.util.Date;
 
 
 @Component
 public class DataLoader {
 
+    private final ExamRepository examRepository;
 
-    private final ExamRepository repository;
     private final QuestionRepository questionRepository;
+
 
     @Autowired
     private SessionFactory sessionFactory;
 
-
-
-
-
-
-    public DataLoader(ExamRepository repository , QuestionRepository questionRepository) {
-
-        this.repository = repository;
+    public DataLoader(ExamRepository examRepository, QuestionRepository questionRepository) {
+        this.examRepository = examRepository;
         this.questionRepository = questionRepository;
 
     }
 
+
     @PostConstruct
     private void loadData() {
 
-        repository.deleteAll();
+        /*examRepository.deleteAll();
 
         MyDao myDao = new MyDao(sessionFactory);
 
@@ -67,7 +60,7 @@ public class DataLoader {
         //questionRepository.saveAll(List.of(question1, question2, question3));
         myDao.insertQuestionData(question1);
         myDao.insertQuestionData(question2);
-        myDao.insertQuestionData(question3);
+        myDao.insertQuestionData(question3);*/
 
     }
 }

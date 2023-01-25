@@ -19,7 +19,7 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Question   {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long questionId;
+    private Long id;
 
 
     private String questionFrage, questionHinweis, questionLoesung;

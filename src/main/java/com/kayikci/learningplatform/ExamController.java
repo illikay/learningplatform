@@ -55,7 +55,7 @@ public class ExamController {
 
                 })
                 .orElseGet(() -> {
-                    newExam.setExamId(examId);
+                    newExam.setId(examId);
                     return  new ResponseEntity<>(repository.save(newExam), HttpStatus.CREATED);
                 });
 
