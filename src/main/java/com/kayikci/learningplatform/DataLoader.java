@@ -9,6 +9,11 @@ import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
 
 @Component
 public class DataLoader {
@@ -18,8 +23,6 @@ public class DataLoader {
     private final QuestionRepository questionRepository;
 
 
-    @Autowired
-    private SessionFactory sessionFactory;
 
     public DataLoader(ExamRepository examRepository, QuestionRepository questionRepository) {
         this.examRepository = examRepository;
@@ -31,36 +34,36 @@ public class DataLoader {
     @PostConstruct
     private void loadData() {
 
-        /*examRepository.deleteAll();
+        examRepository.deleteAll();
+        questionRepository.deleteAll();
 
-        MyDao myDao = new MyDao(sessionFactory);
+
 
         SimpleDateFormat format = new SimpleDateFormat("dd.MM.YYYY HH:mm:ss");
 
         String dateString = format.format( new Date()   );
 
-        Exam exam1 = new Exam( "Prüfung 1", "Info1", "Beschreiung1", dateString, dateString, 12);
-        Exam exam2 = new Exam( "Prüfung 2", "Info2", "Beschreiung2", dateString, dateString, 12);
-        Exam exam3 = new Exam( "Prüfung 3", "Info3", "Beschreiung3", dateString, dateString, 12);
-
-        //repository.saveAll(List.of(exam1, exam2, exam3));
-        myDao.insertExamData(exam1);
-        myDao.insertExamData(exam2);
-        myDao.insertExamData(exam3);
-
+        Exam exam1 = new Exam("Prüfung 1", "Info1", "Beschreiung1", dateString, dateString, 12);
+        Exam exam2 = new Exam("Prüfung 2", "Info2", "Beschreiung2", dateString, dateString, 12);
+        Exam exam3 = new Exam("Prüfung 3", "Info3", "Beschreiung3", dateString, dateString, 12);
 
 
         Question question1 = new Question("questionFrage", "questionHinweis", "questionLoesung" ,
-                dateString, dateString, true, exam1);
+                dateString, dateString, true);
 
-        Question question2 = new Question("questionFrage2", "questionHinweis2", "questionLoesung2" , dateString, dateString, true, exam1);
+        Question question2 = new Question( "questionFrage2", "questionHinweis2", "questionLoesung2" , dateString, dateString, true);
 
-        Question question3 = new Question("questionFrage3", "questionHinweis3", "questionLoesung3" , dateString, dateString, true, exam3);
+        Question question3 = new Question( "questionFrage3", "questionHinweis3", "questionLoesung3" , dateString, dateString, true);
 
-        //questionRepository.saveAll(List.of(question1, question2, question3));
-        myDao.insertQuestionData(question1);
-        myDao.insertQuestionData(question2);
-        myDao.insertQuestionData(question3);*/
+        question1.setExam(exam1);
+        question2.setExam(exam1);
+        question3.setExam(exam3);
+
+        exam1.getQuestions().add(question1);
+        exam1.getQuestions().add(question2);
+        exam3.getQuestions().add(question3);
+
+        examRepository.saveAll(List.of(exam1,exam2,exam3));
 
     }
 }

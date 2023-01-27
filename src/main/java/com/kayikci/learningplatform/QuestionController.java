@@ -34,7 +34,9 @@ public class QuestionController {
                                  @RequestBody Question question) {
         return examRepository.findById(examId).map(oldExam -> {
             question.setExam(oldExam);
-            return questionRepository.save(question);
+            oldExam.getQuestions().add(question);
+            examRepository.save(oldExam);
+            return question;
         }).orElseThrow(() -> new InvalidConfigurationPropertyValueException("Exception", "ExamId " + examId + " not found", "Reason"));
     }
 
