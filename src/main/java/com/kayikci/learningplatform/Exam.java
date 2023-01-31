@@ -23,10 +23,7 @@ public class Exam {
 
     private int anzahlFragen;
 
-    @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            mappedBy = "exam")
-    private Set<Question> questions = new HashSet<>();
+
 
 
     public Exam() {
@@ -98,11 +95,5 @@ public class Exam {
         this.anzahlFragen = anzahlFragen;
     }
 
-    public Set<Question> getQuestions() {
-        return questions;
-    }
 
-    public void setQuestions(Set<Question> questions) {
-        this.questions = questions;
-    }
 }

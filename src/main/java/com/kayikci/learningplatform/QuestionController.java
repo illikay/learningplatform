@@ -2,7 +2,7 @@ package com.kayikci.learningplatform;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -34,10 +34,8 @@ public class QuestionController {
                                  @RequestBody Question question) {
         return examRepository.findById(examId).map(oldExam -> {
             question.setExam(oldExam);
-            oldExam.getQuestions().add(question);
-            examRepository.save(oldExam);
-            return question;
-        }).orElseThrow(() -> new InvalidConfigurationPropertyValueException("Exception", "ExamId " + examId + " not found", "Reason"));
+            return questionRepository.save(question);
+        }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
     }
 
     @PutMapping("/exam/{examId}/questions/{questionId}")
@@ -45,8 +43,7 @@ public class QuestionController {
                                  @PathVariable (value = "questionId") Long questionId,
                                  @RequestBody Question questionRequest) {
         if(!examRepository.existsById(examId)) {
-            throw new InvalidConfigurationPropertyValueException("Exception", "ExamId " + examId + " not found", "Reason");
-        }
+            throw new ResourceNotFoundException("ExamId " + examId + " not found");       }
 
         return questionRepository.findById(questionId).map(oldQuestion -> {
             oldQuestion.setQuestionFrage(questionRequest.getQuestionFrage());
@@ -56,7 +53,7 @@ public class QuestionController {
             oldQuestion.setAenderungsDatum(questionRequest.getAenderungsDatum());
             oldQuestion.setBeantwortet(questionRequest.isBeantwortet());
             return questionRepository.save(oldQuestion);
-        }).orElseThrow(() -> new InvalidConfigurationPropertyValueException("Exception", "QuestionId " + questionId + " not found", "Reason"));
+        }).orElseThrow(() -> new ResourceNotFoundException("QuestionId " + questionId + "not found"));
     }
 
     @DeleteMapping("/exam/{examId}/questions/{questionId}")
@@ -65,6 +62,7 @@ public class QuestionController {
         return questionRepository.findByIdAndExamId(questionId, examId).map(oldQuestion -> {
             questionRepository.delete(oldQuestion);
             return ResponseEntity.ok().build();
-        }).orElseThrow(() -> new InvalidConfigurationPropertyValueException("Exception", "Comment not found with id " + questionId + " and postId " + examId, "Reason"));
+        }).orElseThrow(() -> new ResourceNotFoundException("Question not found with id " + questionId + " and ExamId " + examId));
     }
+
 }

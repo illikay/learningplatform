@@ -1,15 +1,10 @@
 package com.kayikci.learningplatform;
 
 import lombok.NonNull;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Optional;
 
 @RestController
@@ -43,7 +38,7 @@ public class ExamController {
 
 
     @PutMapping("/{examId}")
-    ResponseEntity<Exam> putExam(@PathVariable Long examId, @RequestBody Exam newExam) {
+    public Exam updateExam(@PathVariable Long examId, @RequestBody Exam newExam) {
         return examRepository.findById(examId)
                 .map(oldExam -> {
                     oldExam.setPruefungsName(newExam.getPruefungsName());
@@ -52,14 +47,8 @@ public class ExamController {
                     oldExam.setErstellDatum(newExam.getErstellDatum());
                     oldExam.setAenderungsDatum(newExam.getAenderungsDatum());
                     oldExam.setAnzahlFragen(newExam.getAnzahlFragen());
-                    return new ResponseEntity<>(examRepository.save(oldExam), HttpStatus.OK);
-
-                })
-                .orElseGet(() -> {
-                    newExam.setId(examId);
-                    return  new ResponseEntity<>(examRepository.save(newExam), HttpStatus.CREATED);
-                });
-
+                    return examRepository.save(oldExam);
+                }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
     }
 
 
@@ -70,7 +59,7 @@ public class ExamController {
         return examRepository.findById(examId).map(post -> {
             examRepository.delete(post);
             return ResponseEntity.ok().build();
-        }).orElseThrow(() -> new InvalidConfigurationPropertyValueException("Exception", "ExamId " + examId + " not found", "Reason"));
+        }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
     }
 }
 
