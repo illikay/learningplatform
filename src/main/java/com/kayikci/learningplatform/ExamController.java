@@ -1,8 +1,6 @@
 package com.kayikci.learningplatform;
 
 import lombok.NonNull;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
@@ -10,20 +8,19 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/exam")
 public class ExamController {
-    @NonNull
+
     private final ExamRepository examRepository;
+    private final QuestionRepository questionRepository;
 
 
-    public ExamController(ExamRepository examRepository, QuestionRepository questionRepository) {
+    public ExamController(ExamRepository examRepository, QuestionRepository questionRepository, QuestionRepository questionRepository1) {
         this.examRepository = examRepository;
-
-
-
+        this.questionRepository = questionRepository1;
     }
 
     @GetMapping
-    public Page<Exam> getAllPosts(Pageable pageable) {
-        return examRepository.findAll(pageable);
+    public Iterable<Exam> getExams() {
+        return examRepository.findAll();
     }
 
     @GetMapping("/{examId}")
@@ -56,6 +53,7 @@ public class ExamController {
 
     @DeleteMapping("/{examId}")
     public ResponseEntity<?> deleteExam(@PathVariable Long examId) {
+        questionRepository.deleteAll(questionRepository.findByExamId(examId));
         return examRepository.findById(examId).map(post -> {
             examRepository.delete(post);
             return ResponseEntity.ok().build();

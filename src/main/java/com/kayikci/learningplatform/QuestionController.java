@@ -22,9 +22,8 @@ public class QuestionController {
     private QuestionRepository questionRepository;
 
     @GetMapping("/exam/{examId}/questions")
-    public Page<Question> getAllQuestionsByExamId(@PathVariable (value = "examId") Long examId,
-                                                Pageable pageable) {
-        return questionRepository.findByExamId(examId, pageable);
+    public Iterable<Question>  getAllQuestionsByExamId(@PathVariable (value = "examId") Long examId) {
+        return questionRepository.findByExamId(examId);
     }
 
 
