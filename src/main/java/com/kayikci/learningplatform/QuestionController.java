@@ -5,11 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslJpaRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-
+import java.util.Optional;
 
 
 @RestController
@@ -21,9 +21,16 @@ public class QuestionController {
     @Autowired
     private QuestionRepository questionRepository;
 
+
     @GetMapping("/exam/{examId}/questions")
     public Iterable<Question>  getAllQuestionsByExamId(@PathVariable (value = "examId") Long examId) {
         return questionRepository.findByExamId(examId);
+    }
+
+    @GetMapping("/exam/{examId}/questions/{questionId}")
+    Optional<Question> getQuestionById(@PathVariable (value = "examId") Long examId,
+                               @PathVariable (value = "questionId") Long questionId) {
+        return questionRepository.findByIdAndExamId(questionId, examId);
     }
 
 

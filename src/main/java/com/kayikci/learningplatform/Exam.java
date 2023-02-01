@@ -1,14 +1,11 @@
 package com.kayikci.learningplatform;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Set;
+
 
 @Entity
 @Table(name="exams")
