@@ -52,8 +52,8 @@ public class ExamController {
     @DeleteMapping("/{examId}")
     public ResponseEntity<?> deleteExam(@PathVariable Long examId) {
         questionRepository.deleteAll(questionRepository.findByExamId(examId));
-        return examRepository.findById(examId).map(post -> {
-            examRepository.delete(post);
+        return examRepository.findById(examId).map(oldExam -> {
+            examRepository.delete(oldExam);
             return ResponseEntity.ok().build();
         }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
     }
