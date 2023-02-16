@@ -1,14 +1,11 @@
 package com.kayikci.learningplatform;
 
 
-
-
 import jakarta.persistence.*;
 
 
-
 @Entity
-@Table(name="exams")
+@Table(name = "exams")
 public class Exam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,8 +16,6 @@ public class Exam {
     private String aenderungsDatum;
 
     private int anzahlFragen;
-
-
 
 
     public Exam() {

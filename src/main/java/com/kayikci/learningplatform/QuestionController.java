@@ -2,10 +2,6 @@ package com.kayikci.learningplatform;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.QuerydslJpaRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,21 +19,20 @@ public class QuestionController {
 
 
     @GetMapping("/exam/{examId}/questions")
-    public Iterable<Question>  getAllQuestionsByExamId(@PathVariable (value = "examId") Long examId) {
+    public Iterable<Question> getAllQuestionsByExamId(@PathVariable(value = "examId") Long examId) {
         return questionRepository.findByExamId(examId);
     }
 
     @GetMapping("/exam/{examId}/questions/{questionId}")
-    Optional<Question> getQuestionById(@PathVariable (value = "examId") Long examId,
-                               @PathVariable (value = "questionId") Long questionId) {
+    Optional<Question> getQuestionById(@PathVariable(value = "examId") Long examId,
+                                       @PathVariable(value = "questionId") Long questionId) {
         return questionRepository.findByIdAndExamId(questionId, examId);
     }
 
 
-
     @PostMapping("/exam/{examId}/questions")
-    public Question createQuestion(@PathVariable (value = "examId") Long examId,
-                                 @RequestBody Question question) {
+    public Question createQuestion(@PathVariable(value = "examId") Long examId,
+                                   @RequestBody Question question) {
         return examRepository.findById(examId).map(oldExam -> {
             question.setExam(oldExam);
             return questionRepository.save(question);
@@ -45,11 +40,12 @@ public class QuestionController {
     }
 
     @PutMapping("/exam/{examId}/questions/{questionId}")
-    public Question updateQuestion(@PathVariable (value = "examId") Long examId,
-                                 @PathVariable (value = "questionId") Long questionId,
-                                 @RequestBody Question questionRequest) {
-        if(!examRepository.existsById(examId)) {
-            throw new ResourceNotFoundException("ExamId " + examId + " not found");       }
+    public Question updateQuestion(@PathVariable(value = "examId") Long examId,
+                                   @PathVariable(value = "questionId") Long questionId,
+                                   @RequestBody Question questionRequest) {
+        if (!examRepository.existsById(examId)) {
+            throw new ResourceNotFoundException("ExamId " + examId + " not found");
+        }
 
         return questionRepository.findById(questionId).map(oldQuestion -> {
             oldQuestion.setQuestionFrage(questionRequest.getQuestionFrage());
@@ -63,8 +59,8 @@ public class QuestionController {
     }
 
     @DeleteMapping("/exam/{examId}/questions/{questionId}")
-    public ResponseEntity<?> deleteQuestion(@PathVariable (value = "examId") Long examId,
-                                           @PathVariable (value = "questionId") Long questionId) {
+    public ResponseEntity<?> deleteQuestion(@PathVariable(value = "examId") Long examId,
+                                            @PathVariable(value = "questionId") Long questionId) {
         return questionRepository.findByIdAndExamId(questionId, examId).map(oldQuestion -> {
             questionRepository.delete(oldQuestion);
             return ResponseEntity.ok().build();

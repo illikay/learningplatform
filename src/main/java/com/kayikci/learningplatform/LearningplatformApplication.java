@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class LearningplatformApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(LearningplatformApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(LearningplatformApplication.class, args);
+    }
 
 }

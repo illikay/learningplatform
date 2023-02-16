@@ -2,16 +2,15 @@ package com.kayikci.learningplatform;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 
 @Entity
-@Table(name="questions")
+@Table(name = "questions")
 
-public class Question   {
+public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,7 +34,7 @@ public class Question   {
     public Question() {
     }
 
-    public Question(String questionFrage, String questionHinweis, String questionLoesung, String erstellDatum, String aenderungsDatum, boolean isBeantwortet){
+    public Question(String questionFrage, String questionHinweis, String questionLoesung, String erstellDatum, String aenderungsDatum, boolean isBeantwortet) {
 
         this.questionFrage = questionFrage;
         this.questionHinweis = questionHinweis;

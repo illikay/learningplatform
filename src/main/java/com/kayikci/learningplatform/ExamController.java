@@ -1,6 +1,8 @@
 package com.kayikci.learningplatform;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Optional;
 
 @RestController
@@ -45,8 +47,6 @@ public class ExamController {
                     return examRepository.save(oldExam);
                 }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
     }
-
-
 
 
     @DeleteMapping("/{examId}")
