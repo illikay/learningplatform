@@ -9,6 +9,7 @@ import java.util.Date;
 
 @Component
 public class DataLoader {
+    //Kommentar
 
     private final ExamRepository examRepository;
 
