@@ -1,11 +1,18 @@
-package com.kayikci.learningplatform;
+package com.kayikci.learningplatform.controller;
 
+import com.kayikci.learningplatform.domain.Exam;
+import com.kayikci.learningplatform.repository.ExamRepository;
+import com.kayikci.learningplatform.repository.QuestionRepository;
+import com.kayikci.learningplatform.exception.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/exam")
 public class ExamController {
 
@@ -17,6 +24,7 @@ public class ExamController {
         this.examRepository = examRepository;
         this.questionRepository = questionRepository1;
     }
+
 
     @GetMapping
     public Iterable<Exam> getExams() {

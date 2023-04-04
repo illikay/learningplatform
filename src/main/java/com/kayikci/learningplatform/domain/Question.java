@@ -1,4 +1,4 @@
-package com.kayikci.learningplatform;
+package com.kayikci.learningplatform.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

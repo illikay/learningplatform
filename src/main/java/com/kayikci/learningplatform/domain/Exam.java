@@ -1,4 +1,4 @@
-package com.kayikci.learningplatform;
+package com.kayikci.learningplatform.domain;
 
 
 import jakarta.persistence.*;

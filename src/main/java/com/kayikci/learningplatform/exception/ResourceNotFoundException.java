@@ -1,4 +1,4 @@
-package com.kayikci.learningplatform;
+package com.kayikci.learningplatform.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

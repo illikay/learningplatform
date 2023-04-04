@@ -1,5 +1,6 @@
-package com.kayikci.learningplatform;
+package com.kayikci.learningplatform.repository;
 
+import com.kayikci.learningplatform.domain.Exam;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

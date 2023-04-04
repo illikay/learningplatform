@@ -1,14 +1,20 @@
-package com.kayikci.learningplatform;
+package com.kayikci.learningplatform.controller;
 
 
+import com.kayikci.learningplatform.repository.ExamRepository;
+import com.kayikci.learningplatform.domain.Question;
+import com.kayikci.learningplatform.repository.QuestionRepository;
+import com.kayikci.learningplatform.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class QuestionController {
 
     @Autowired

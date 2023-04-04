@@ -1,5 +1,6 @@
-package com.kayikci.learningplatform;
+package com.kayikci.learningplatform.repository;
 
+import com.kayikci.learningplatform.domain.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
