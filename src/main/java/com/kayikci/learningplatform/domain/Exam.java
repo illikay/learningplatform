@@ -1,7 +1,11 @@
 package com.kayikci.learningplatform.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kayikci.learningplatform.user.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 
 @Entity
@@ -16,6 +20,12 @@ public class Exam {
     private String aenderungsDatum;
 
     private int anzahlFragen;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private User user;
 
 
     public Exam() {
@@ -88,5 +98,11 @@ public class Exam {
         this.anzahlFragen = anzahlFragen;
     }
 
+    public User getUser() {
+        return user;
+    }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
