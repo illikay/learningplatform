@@ -9,6 +9,7 @@ import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,37 +43,26 @@ public class UserController {
         return userRepository.findAll();
     }*/
 
-    @GetMapping("/user/{userId}/exams")
-    public ResponseEntity<Iterable<Exam>> getAllExamsByUserId(@PathVariable(value = "userId") Integer userId,
-                                                              @RequestHeader("Authorization") String bearerToken) {
+    @GetMapping("/user/{userName}/exams")
+    @PreAuthorize("#userName == authentication.name")
+    public ResponseEntity<Iterable<Exam>> getAllExamsByUserId(@PathVariable(value = "userName") String userName) {
 
-        String token = bearerToken.substring(7);
-
-        User user = userRepository.findById(userId).get();
-        if (!jwtService.isTokenValid(token, user)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        Iterable<Exam> exams = examRepository.findByUserId(userId);
+        User user = userRepository.findByEmail(userName).get();
+        Iterable<Exam> exams = examRepository.findByUserId(user.getId());
         return ResponseEntity.ok(exams);
     }
 
 
 
-    @PostMapping("/user/{userId}/exams")
-    public ResponseEntity<Exam> createExam(@PathVariable(value = "userId") Integer userId,
-                           @RequestBody Exam exam, @RequestHeader("Authorization") String bearerToken) {
-
-        String token = bearerToken.substring(7);
-
-        User user = userRepository.findById(userId).get();
-        if (!jwtService.isTokenValid(token, user)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        return userRepository.findById(userId).map(oldUser -> {
+    @PostMapping("/user/{userName}/exams")
+    @PreAuthorize("#userName == authentication.name")
+    public ResponseEntity<Exam> createExam(@PathVariable(value = "userName") String userName,
+                                           @RequestBody Exam exam) {
+        return userRepository.findByEmail(userName).map(oldUser -> {
             exam.setUser(oldUser);
             examRepository.save(exam);
             return ResponseEntity.ok(exam);
-        }).orElseThrow(() -> new ResourceNotFoundException("UserId " + userId + " not found"));
+        }).orElseThrow(() -> new ResourceNotFoundException("UserId " + userName + " not found"));
     }
 
 
