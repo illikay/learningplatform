@@ -1,20 +1,14 @@
 package com.kayikci.learningplatform.data;
 
-import com.kayikci.learningplatform.auth.AuthenticationRequest;
 import com.kayikci.learningplatform.auth.AuthenticationService;
-import com.kayikci.learningplatform.auth.RegisterRequest;
-import com.kayikci.learningplatform.domain.Exam;
-import com.kayikci.learningplatform.domain.Question;
 import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.repository.QuestionRepository;
 import com.kayikci.learningplatform.user.UserRepository;
+import com.kayikci.learningplatform.user.UserService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
 @Component
@@ -30,13 +24,16 @@ public class DataLoader {
 
     private final AuthenticationService service;
 
+    private final UserService userService;
 
 
-    public DataLoader(ExamRepository examRepository, QuestionRepository questionRepository, UserRepository userRepository, AuthenticationService service) {
+
+    public DataLoader(ExamRepository examRepository, QuestionRepository questionRepository, UserRepository userRepository, AuthenticationService service, UserService userService) {
         this.examRepository = examRepository;
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.service = service;
+        this.userService = userService;
     }
 
 

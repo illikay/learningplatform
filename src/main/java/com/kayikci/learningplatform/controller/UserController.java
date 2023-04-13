@@ -7,16 +7,11 @@ import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.repository.QuestionRepository;
 import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
-import org.springframework.http.HttpStatus;
+import com.kayikci.learningplatform.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 @RestController
@@ -27,15 +22,18 @@ public class UserController {
     private final QuestionRepository questionRepository;
 
     private final UserRepository userRepository;
-    private final JwtService jwtService;
+
+
+    private final UserService userService;
 
 
 
-    public UserController(ExamRepository examRepository, QuestionRepository questionRepository, UserRepository userRepository, JwtService jwtService) {
+    public UserController(ExamRepository examRepository, QuestionRepository questionRepository, UserRepository userRepository, UserService userService) {
         this.examRepository = examRepository;
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
-        this.jwtService = jwtService;
+        this.userService = userService;
+
     }
 
     /*@GetMapping("/user")
@@ -43,26 +41,25 @@ public class UserController {
         return userRepository.findAll();
     }*/
 
-    @GetMapping("/user/{userName}/exams")
-    @PreAuthorize("#userName == authentication.name")
-    public ResponseEntity<Iterable<Exam>> getAllExamsByUserId(@PathVariable(value = "userName") String userName) {
-
-        User user = userRepository.findByEmail(userName).get();
+    @GetMapping("/user/{userId}/exams")
+    @PreAuthorize("@userService.hasId(#userId, authentication.name)")
+    public ResponseEntity<Iterable<Exam>> getAllExamsByUserId(@PathVariable(value = "userId") Integer userId) {
+        User user = userRepository.findById(userId).get();
         Iterable<Exam> exams = examRepository.findByUserId(user.getId());
         return ResponseEntity.ok(exams);
     }
 
 
 
-    @PostMapping("/user/{userName}/exams")
-    @PreAuthorize("#userName == authentication.name")
-    public ResponseEntity<Exam> createExam(@PathVariable(value = "userName") String userName,
+    @PostMapping("/user/{userId}/exams")
+    @PreAuthorize("@userService.hasId(#userId, authentication.name)")
+    public ResponseEntity<Exam> createExam(@PathVariable(value = "userId") Integer userId,
                                            @RequestBody Exam exam) {
-        return userRepository.findByEmail(userName).map(oldUser -> {
+        return userRepository.findById(userId).map(oldUser -> {
             exam.setUser(oldUser);
             examRepository.save(exam);
             return ResponseEntity.ok(exam);
-        }).orElseThrow(() -> new ResourceNotFoundException("UserId " + userName + " not found"));
+        }).orElseThrow(() -> new ResourceNotFoundException("UserId " + userId + " not found"));
     }
 
 
