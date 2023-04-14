@@ -25,7 +25,8 @@ public class QuestionController {
 
 
     @GetMapping("/exam/{examId}/questions")
-    public Iterable<Question> getAllQuestionsByExamId(@PathVariable(value = "examId") Long examId) {
+    @PreAuthorize("@userService.hasId(#userId, authentication.name)")
+    public Iterable<Question> getAllQuestionsByExamId(@PathVariable(value= "userId") Integer userId , @PathVariable(value = "examId") Long examId) {
         return questionRepository.findByExamId(examId);
     }
 

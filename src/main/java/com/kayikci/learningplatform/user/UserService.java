@@ -17,10 +17,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public boolean hasId(Integer userId, String authUserName){
+    public boolean hasId(Long userId, String authUserName){
         User user = userRepository.findByEmail(authUserName).get();
         return user.getId().equals(userId);
 
     }
+
 
 }
