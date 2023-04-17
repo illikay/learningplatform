@@ -1,11 +1,13 @@
 package com.kayikci.learningplatform.controller;
 
 
+import com.kayikci.learningplatform.config.JwtService;
 import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.domain.Question;
 import com.kayikci.learningplatform.repository.QuestionRepository;
 import com.kayikci.learningplatform.exception.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kayikci.learningplatform.user.User;
+import com.kayikci.learningplatform.user.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,29 +19,45 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 public class QuestionController {
 
-    @Autowired
+
     private ExamRepository examRepository;
 
-    @Autowired
+    private final UserRepository userRepository;
+
     private QuestionRepository questionRepository;
 
 
+    private final JwtService jwtService;
+
+    public QuestionController(ExamRepository examRepository, UserRepository userRepository, QuestionRepository questionRepository, JwtService jwtService) {
+        this.examRepository = examRepository;
+        this.userRepository = userRepository;
+        this.questionRepository = questionRepository;
+        this.jwtService = jwtService;
+    }
+
+
     @GetMapping("/exam/{examId}/questions")
-    @PreAuthorize("@userService.hasId(#userId, authentication.name)")
-    public Iterable<Question> getAllQuestionsByExamId(@PathVariable(value= "userId") Integer userId , @PathVariable(value = "examId") Long examId) {
+    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    public Iterable<Question> getAllQuestionsByExamId(@RequestHeader("Authorization") String token , @PathVariable(value = "examId") Long examId) {
+
         return questionRepository.findByExamId(examId);
     }
 
     @GetMapping("/exam/{examId}/questions/{questionId}")
-    Optional<Question> getQuestionById(@PathVariable(value = "examId") Long examId,
+    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    Optional<Question> getQuestionById(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                        @PathVariable(value = "questionId") Long questionId) {
         return questionRepository.findByIdAndExamId(questionId, examId);
     }
 
 
     @PostMapping("/exam/{examId}/questions")
-    public Question createQuestion(@PathVariable(value = "examId") Long examId,
+    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    public Question createQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                    @RequestBody Question question) {
+
+
         return examRepository.findById(examId).map(oldExam -> {
             question.setExam(oldExam);
             return questionRepository.save(question);
@@ -47,7 +65,8 @@ public class QuestionController {
     }
 
     @PutMapping("/exam/{examId}/questions/{questionId}")
-    public Question updateQuestion(@PathVariable(value = "examId") Long examId,
+    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    public Question updateQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                    @PathVariable(value = "questionId") Long questionId,
                                    @RequestBody Question questionRequest) {
         if (!examRepository.existsById(examId)) {
@@ -66,7 +85,8 @@ public class QuestionController {
     }
 
     @DeleteMapping("/exam/{examId}/questions/{questionId}")
-    public ResponseEntity<?> deleteQuestion(@PathVariable(value = "examId") Long examId,
+    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    public ResponseEntity<?> deleteQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                             @PathVariable(value = "questionId") Long questionId) {
         return questionRepository.findByIdAndExamId(questionId, examId).map(oldQuestion -> {
             questionRepository.delete(oldQuestion);

@@ -4,7 +4,6 @@ import com.kayikci.learningplatform.auth.AuthenticationService;
 import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.repository.QuestionRepository;
 import com.kayikci.learningplatform.user.UserRepository;
-import com.kayikci.learningplatform.user.UserService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,16 +23,16 @@ public class DataLoader {
 
     private final AuthenticationService service;
 
-    private final UserService userService;
 
 
 
-    public DataLoader(ExamRepository examRepository, QuestionRepository questionRepository, UserRepository userRepository, AuthenticationService service, UserService userService) {
+
+    public DataLoader(ExamRepository examRepository, QuestionRepository questionRepository, UserRepository userRepository, AuthenticationService service) {
         this.examRepository = examRepository;
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.service = service;
-        this.userService = userService;
+
     }
 
 

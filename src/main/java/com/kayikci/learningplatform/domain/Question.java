@@ -2,6 +2,7 @@ package com.kayikci.learningplatform.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kayikci.learningplatform.user.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -23,6 +24,7 @@ public class Question {
     private String aenderungsDatum;
 
     private boolean isBeantwortet;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exam_id", nullable = false)
@@ -109,4 +111,6 @@ public class Question {
     public void setExam(Exam exam) {
         this.exam = exam;
     }
+
+
 }

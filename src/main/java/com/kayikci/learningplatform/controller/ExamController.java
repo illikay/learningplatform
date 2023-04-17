@@ -1,50 +1,84 @@
 package com.kayikci.learningplatform.controller;
 
+import com.kayikci.learningplatform.config.JwtService;
 import com.kayikci.learningplatform.domain.Exam;
+import com.kayikci.learningplatform.exception.ResourceNotFoundException;
 import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.repository.QuestionRepository;
-import com.kayikci.learningplatform.exception.ResourceNotFoundException;
+import com.kayikci.learningplatform.user.User;
+import com.kayikci.learningplatform.user.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("/exam")
 public class ExamController {
 
     private final ExamRepository examRepository;
     private final QuestionRepository questionRepository;
 
+    private final UserRepository userRepository;
 
-    public ExamController(ExamRepository examRepository, QuestionRepository questionRepository, QuestionRepository questionRepository1) {
+
+    private final JwtService jwtService;
+
+
+
+    public ExamController(ExamRepository examRepository, QuestionRepository questionRepository, UserRepository userRepository, JwtService jwtService) {
         this.examRepository = examRepository;
-        this.questionRepository = questionRepository1;
+        this.questionRepository = questionRepository;
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+
+
+    }
+
+    @GetMapping("/authenticatedUserId/{email}")
+    public ResponseEntity<Long> getAuthenticatedUser(@PathVariable(value = "email") String email) {
+        User authenticatedUser = userRepository.findByEmail(email).get();
+        return ResponseEntity.ok(authenticatedUser.getId());
+    }
+
+    @GetMapping("/exam")
+    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    public ResponseEntity<Iterable<Exam>> getAllExamsByUserId(@RequestHeader("Authorization") String token) {
+        String email = jwtService.extractUsernameForController(token);
+        User user = userRepository.findByEmail(email).get();
+        Iterable<Exam> exams = examRepository.findByUserId(user.getId());
+        return ResponseEntity.ok(exams);
+    }
+
+    @GetMapping("/exam/{examId}")
+    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    ResponseEntity<Exam> getExamByUserId(@RequestHeader("Authorization") String token, @PathVariable Long examId) {
+        String email = jwtService.extractUsernameForController(token);
+        User user = userRepository.findByEmail(email).get();
+        Exam exam = examRepository.findByIdAndUserId(examId, user.getId()).get();
+        return ResponseEntity.ok(exam);
     }
 
 
-    @GetMapping
-    public Iterable<Exam> getExams() {
-        return examRepository.findAll();
+
+    @PostMapping("/exam")
+    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    public ResponseEntity<Exam> createExamByUserId(@RequestHeader("Authorization") String token,
+                                           @RequestBody Exam exam) {
+        String email = jwtService.extractUsernameForController(token);
+        return userRepository.findByEmail(email).map(oldUser -> {
+            exam.setUser(oldUser);
+            examRepository.save(exam);
+            return ResponseEntity.ok(exam);
+        }).orElseThrow(() -> new ResourceNotFoundException("Username " + email + " not found"));
     }
 
-    @GetMapping("/{examId}")
-    Optional<Exam> getExamById(@PathVariable Long examId) {
-        return examRepository.findById(examId);
-    }
-
-    @PostMapping
-    Exam postExam(@RequestBody Exam exam) {
-        return examRepository.save(exam);
-    }
-
-
-    @PutMapping("/{examId}")
-    public Exam updateExam(@PathVariable Long examId, @RequestBody Exam newExam) {
-        return examRepository.findById(examId)
+    @PutMapping("/exam/{examId}")
+    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    public Exam updateExam(@RequestHeader("Authorization") String token, @PathVariable Long examId, @RequestBody Exam newExam) {
+        String email = jwtService.extractUsernameForController(token);
+        User user = userRepository.findByEmail(email).get();
+        return examRepository.findByIdAndUserId(examId, user.getId())
                 .map(oldExam -> {
                     oldExam.setPruefungsName(newExam.getPruefungsName());
                     oldExam.setInfo(newExam.getInfo());
@@ -56,15 +90,19 @@ public class ExamController {
                 }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
     }
 
-
-    @DeleteMapping("/{examId}")
-    public ResponseEntity<?> deleteExam(@PathVariable Long examId) {
+    @DeleteMapping("/exam/{examId}")
+    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    public ResponseEntity<?> deleteExam(@RequestHeader("Authorization") String token, @PathVariable Long examId) {
+        String email = jwtService.extractUsernameForController(token);
+        User user = userRepository.findByEmail(email).get();
         questionRepository.deleteAll(questionRepository.findByExamId(examId));
-        return examRepository.findById(examId).map(oldExam -> {
+        return examRepository.findByIdAndUserId(examId, user.getId() ).map(oldExam -> {
             examRepository.delete(oldExam);
             return ResponseEntity.ok().build();
         }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
     }
+
+
 }
 
 

@@ -46,6 +46,17 @@ public class JwtService {
         .compact();
   }
 
+  public boolean isTokenValidForController(String token, String authUserName) {
+    String onlyToken = token.substring(7);
+    final String username = extractUsername(onlyToken);
+    return (username.equals(authUserName) && !isTokenExpired(onlyToken));
+  }
+
+  public String extractUsernameForController(String token) {
+    String onlyToken = token.substring(7);
+    return extractClaim(onlyToken, Claims::getSubject);
+  }
+
   public boolean isTokenValid(String token, UserDetails userDetails) {
     final String username = extractUsername(token);
     return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
