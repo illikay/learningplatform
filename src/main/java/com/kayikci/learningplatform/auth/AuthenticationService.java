@@ -2,6 +2,7 @@ package com.kayikci.learningplatform.auth;
 
 
 import com.kayikci.learningplatform.config.JwtService;
+import com.kayikci.learningplatform.exception.ResourceNotFoundException;
 import com.kayikci.learningplatform.token.Token;
 import com.kayikci.learningplatform.token.TokenRepository;
 import com.kayikci.learningplatform.token.TokenType;
@@ -17,11 +18,17 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-  private final UserRepository repository;
+  private final UserRepository userRepository;
   private final TokenRepository tokenRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+
+  public boolean emailExists(String email) {
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found for email: " + email));
+    return user != null;
+  }
 
   public AuthenticationResponse register(RegisterRequest request) {
     var user = User.builder()
@@ -31,7 +38,7 @@ public class AuthenticationService {
         .password(passwordEncoder.encode(request.getPassword()))
         .role(Role.USER)
         .build();
-    var savedUser = repository.save(user);
+    var savedUser = userRepository.save(user);
     var jwtToken = jwtService.generateToken(user);
     saveUserToken(savedUser, jwtToken);
     return AuthenticationResponse.builder()
@@ -46,7 +53,7 @@ public class AuthenticationService {
             request.getPassword()
         )
     );
-    var user = repository.findByEmail(request.getEmail())
+    var user = userRepository.findByEmail(request.getEmail())
         .orElseThrow();
     var jwtToken = jwtService.generateToken(user);
     revokeAllUserTokens(user);

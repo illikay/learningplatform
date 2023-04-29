@@ -3,6 +3,7 @@ package com.kayikci.learningplatform.user;
 
 import com.kayikci.learningplatform.token.Token;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+
 
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +33,7 @@ public class User implements UserDetails {
   private String lastname;
 
   @Column(unique = true)
+  @Email(message = "Please provide a valid email address")
   private String email;
 
   private String password;
