@@ -47,8 +47,11 @@ public class ExamController {
     @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
     public ResponseEntity<Iterable<Exam>> getAllExamsByUserId(@RequestHeader("Authorization") String token) {
         String email = jwtService.extractUsernameForController(token);
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found for email:" + email));
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+            new ResourceNotFoundException("User not found for email:" + email));
+
         Iterable<Exam> exams = examRepository.findByUserId(user.getId());
+
         return ResponseEntity.ok(exams);
     }
 

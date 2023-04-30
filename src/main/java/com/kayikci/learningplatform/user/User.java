@@ -4,6 +4,7 @@ package com.kayikci.learningplatform.user;
 import com.kayikci.learningplatform.token.Token;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,11 +30,13 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @NotEmpty(message = "Vorname darf nicht leer sein")
   private String firstname;
+  @NotEmpty(message = "Nachname darf nicht leer sein")
   private String lastname;
 
   @Column(unique = true)
-  @Email(message = "Please provide a valid email address")
+  @Email(message = "Bitte gültige E-Mail-Adresse angeben")
   private String email;
 
   private String password;
