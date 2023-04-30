@@ -37,6 +37,7 @@ public class User implements UserDetails {
 
   @Column(unique = true)
   @Email(message = "Bitte gültige E-Mail-Adresse angeben")
+  @NotEmpty(message = "E-Mail darf nicht leer sein")
   private String email;
 
   private String password;
