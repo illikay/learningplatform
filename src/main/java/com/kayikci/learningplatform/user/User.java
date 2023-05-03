@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,8 +31,11 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Length(max = 30)
   @NotEmpty(message = "Vorname darf nicht leer sein")
   private String firstname;
+
+  @Length(max = 30)
   @NotEmpty(message = "Nachname darf nicht leer sein")
   private String lastname;
 
@@ -40,6 +44,7 @@ public class User implements UserDetails {
   @NotEmpty(message = "E-Mail darf nicht leer sein")
   private String email;
 
+  @Length(max = 300)
   private String password;
 
   @Enumerated(EnumType.STRING)

@@ -23,7 +23,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             ConstraintViolationException ex, WebRequest request) {
         List<String> errors = new ArrayList<>();
         for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
-            errors.add(violation.getMessage());
+            errors.add(violation.getPropertyPath() + " "  + violation.getMessage());
         }
 
        return ResponseEntity.badRequest().body(errors.toString());

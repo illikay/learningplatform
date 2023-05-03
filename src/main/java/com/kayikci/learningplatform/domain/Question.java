@@ -6,6 +6,7 @@ import com.kayikci.learningplatform.user.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.validator.constraints.Length;
 
 
 @Entity
@@ -16,11 +17,17 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Length(max = 50)
+    private String questionFrage;
+    @Length(max = 50)
+    private String  questionHinweis;
 
-    private String questionFrage, questionHinweis, questionLoesung;
-
+    @Length(max = 50)
+    private String questionLoesung;
+    @Length(max = 20)
     private String erstellDatum;
 
+    @Length(max = 20)
     private String aenderungsDatum;
 
     private boolean isBeantwortet;
