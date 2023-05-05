@@ -9,6 +9,7 @@ import com.kayikci.learningplatform.token.TokenType;
 import com.kayikci.learningplatform.user.Role;
 import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +25,10 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
+
+
+
+
   public boolean emailExists(String email) {
     User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("User not found for email: " + email));
@@ -31,6 +36,7 @@ public class AuthenticationService {
   }
 
   public AuthenticationResponse register(RegisterRequest request) {
+
     var user = User.builder()
         .firstname(request.getFirstname())
         .lastname(request.getLastname())

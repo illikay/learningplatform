@@ -8,10 +8,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/usermanagement")
@@ -25,7 +28,7 @@ public class AuthenticationController {
 
   @PostMapping("/register")
   public ResponseEntity<AuthenticationResponse> register(
-          @Valid @RequestBody RegisterRequest request) {
+          @Validated @RequestBody RegisterRequest request) {
     return ResponseEntity.ok(authenticationService.register(request));
   }
 
@@ -34,6 +37,19 @@ public class AuthenticationController {
           @Valid @RequestBody AuthenticationRequest request
   ) {
     return ResponseEntity.ok(authenticationService.authenticate(request));
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    // Get the validation errors and create a custom error response
+    List<String> errors = ex.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(FieldError::getDefaultMessage)
+            .collect(Collectors.toList());
+
+    // Return a response entity with the error response and a bad request status
+    return ResponseEntity.badRequest().body(errors.toString());
   }
 
 
