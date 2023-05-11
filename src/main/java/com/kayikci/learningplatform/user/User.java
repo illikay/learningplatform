@@ -32,11 +32,11 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Length(max = 30)
+  @Length(min = 1, max = 30)
   @NotEmpty(message = "Vorname darf nicht leer sein")
   private String firstname;
 
-  @Length(max = 30)
+  @Length(min = 1, max = 30)
   @NotEmpty(message = "Nachname darf nicht leer sein")
   private String lastname;
 
@@ -45,7 +45,7 @@ public class User implements UserDetails {
   @NotEmpty(message = "E-Mail darf nicht leer sein")
   private String email;
 
-  @Length(max = 300)
+
   private String password;
 
   @Enumerated(EnumType.STRING)
