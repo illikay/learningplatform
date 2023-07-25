@@ -103,7 +103,7 @@ public class ExamController {
         questionRepository.deleteAll(questionRepository.findByExamId(examId));
         return examRepository.findByIdAndUserId(examId, user.getId() ).map(oldExam -> {
             examRepository.delete(oldExam);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
     }
 
