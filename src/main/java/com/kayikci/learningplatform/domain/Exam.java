@@ -5,11 +5,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kayikci.learningplatform.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Length;
 
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "exams")
 public class Exam {
@@ -37,9 +45,6 @@ public class Exam {
     private User user;
 
 
-    public Exam() {
-    }
-
     public Exam(String pruefungsName, String info, String beschreibung, String erstellDatum, String aenderungsDatum, int anzahlFragen) {
         this.pruefungsName = pruefungsName;
         this.info = info;
@@ -51,67 +56,7 @@ public class Exam {
     }
 
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public String getPruefungsName() {
-        return pruefungsName;
-    }
 
-    public void setPruefungsName(String pruefungsName) {
-        this.pruefungsName = pruefungsName;
-    }
-
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-    }
-
-    public String getBeschreibung() {
-        return beschreibung;
-    }
-
-    public void setBeschreibung(String beschreibung) {
-        this.beschreibung = beschreibung;
-    }
-
-    public String getErstellDatum() {
-        return erstellDatum;
-    }
-
-    public void setErstellDatum(String erstellDatum) {
-        this.erstellDatum = erstellDatum;
-    }
-
-    public String getAenderungsDatum() {
-        return aenderungsDatum;
-    }
-
-    public void setAenderungsDatum(String aenderungsDatum) {
-        this.aenderungsDatum = aenderungsDatum;
-    }
-
-    public int getAnzahlFragen() {
-        return anzahlFragen;
-    }
-
-    public void setAnzahlFragen(int anzahlFragen) {
-        this.anzahlFragen = anzahlFragen;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

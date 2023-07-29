@@ -4,11 +4,18 @@ package com.kayikci.learningplatform.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kayikci.learningplatform.user.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Length;
 
-
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "questions")
 
@@ -39,10 +46,6 @@ public class Question {
     @JsonIgnore
     private Exam exam;
 
-
-    public Question() {
-    }
-
     public Question(String questionFrage, String questionHinweis, String questionLoesung, String erstellDatum, String aenderungsDatum, boolean isBeantwortet) {
 
         this.questionFrage = questionFrage;
@@ -55,69 +58,8 @@ public class Question {
 
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public String getQuestionFrage() {
-        return questionFrage;
-    }
-
-    public void setQuestionFrage(String questionFrage) {
-        this.questionFrage = questionFrage;
-    }
-
-    public String getQuestionHinweis() {
-        return questionHinweis;
-    }
-
-    public void setQuestionHinweis(String questionHinweis) {
-        this.questionHinweis = questionHinweis;
-    }
-
-    public String getQuestionLoesung() {
-        return questionLoesung;
-    }
-
-    public void setQuestionLoesung(String questionLoesung) {
-        this.questionLoesung = questionLoesung;
-    }
-
-    public String getErstellDatum() {
-        return erstellDatum;
-    }
-
-    public void setErstellDatum(String erstellDatum) {
-        this.erstellDatum = erstellDatum;
-    }
-
-    public String getAenderungsDatum() {
-        return aenderungsDatum;
-    }
-
-    public void setAenderungsDatum(String aenderungsDatum) {
-        this.aenderungsDatum = aenderungsDatum;
-    }
-
-    public boolean isBeantwortet() {
-        return isBeantwortet;
-    }
-
-    public void setBeantwortet(boolean beantwortet) {
-        isBeantwortet = beantwortet;
-    }
-
-    public Exam getExam() {
-        return exam;
-    }
-
-    public void setExam(Exam exam) {
-        this.exam = exam;
-    }
 
 
 }

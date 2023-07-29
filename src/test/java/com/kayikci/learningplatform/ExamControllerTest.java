@@ -21,20 +21,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class ExamControllerTest {
 
@@ -51,6 +57,9 @@ public class ExamControllerTest {
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private TestRestTemplate testRestTemplate;
 
     @BeforeAll
     static void beforeAllTests() {
@@ -71,6 +80,39 @@ public class ExamControllerTest {
         examRepository.deleteAll();
         tokenRepository.deleteAll();
         userRepository.deleteAll();
+
+    }
+
+    @Test
+    public void testAuthorization() throws Exception {
+
+        RegisterRequest registerRequest = new RegisterRequest("firstname","lastname", "asdf@asdf.de", "Asdf0101!");
+
+        AuthenticationResponse  authenticationResponse = authenticationService.register(registerRequest);
+        String token = authenticationResponse.getToken();
+
+        Exam exam1 = new Exam("pruefungsname1", "info1",
+                "beschreibung1", "erstelldatum1", "aenderungsdatum1", 12);
+        User user = userRepository.findByEmail(registerRequest.getEmail()).get();
+
+        exam1.setUser(user);
+        examRepository.save(exam1);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("accept", "application/json");
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity requestEntity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<List<Exam>> response = testRestTemplate.exchange("/exam",
+                HttpMethod.GET,
+                requestEntity,
+                new ParameterizedTypeReference<List<Exam>>() {
+                });
+        List<Exam> exams = response.getBody();
+        // Assert
+        assertTrue(response.getStatusCode().is2xxSuccessful(), "HTTP Response status code should be 200");
+        assertTrue(exams.size() == 1, "There should be exactly 1 user in the list");
+
 
     }
 
