@@ -1,39 +1,37 @@
 package com.kayikci.learningplatform;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayikci.learningplatform.auth.AuthenticationRequest;
+
 import com.kayikci.learningplatform.auth.AuthenticationResponse;
 import com.kayikci.learningplatform.auth.AuthenticationService;
 import com.kayikci.learningplatform.auth.RegisterRequest;
-import com.kayikci.learningplatform.config.JwtService;
+
 import com.kayikci.learningplatform.domain.Exam;
+import com.kayikci.learningplatform.exception.ResourceNotFoundException;
 import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.token.TokenRepository;
-import com.kayikci.learningplatform.user.Role;
+
 import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.security.test.context.support.WithMockUser;
+
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
+
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -84,7 +82,7 @@ public class ExamControllerTest {
     }
 
     @Test
-    public void testAuthorization() throws Exception {
+    public void testAuthorization() {
 
         RegisterRequest registerRequest = new RegisterRequest("firstname","lastname", "asdf@asdf.de", "Asdf0101!");
 
@@ -93,7 +91,9 @@ public class ExamControllerTest {
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
                 "beschreibung1", "erstelldatum1", "aenderungsdatum1", 12);
-        User user = userRepository.findByEmail(registerRequest.getEmail()).get();
+
+        User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
+                new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
         exam1.setUser(user);
         examRepository.save(exam1);
@@ -106,12 +106,13 @@ public class ExamControllerTest {
         ResponseEntity<List<Exam>> response = testRestTemplate.exchange("/exam",
                 HttpMethod.GET,
                 requestEntity,
-                new ParameterizedTypeReference<List<Exam>>() {
+                new ParameterizedTypeReference<>() {
                 });
         List<Exam> exams = response.getBody();
         // Assert
         assertTrue(response.getStatusCode().is2xxSuccessful(), "HTTP Response status code should be 200");
-        assertTrue(exams.size() == 1, "There should be exactly 1 user in the list");
+        assertNotNull(exams, "The list exams shouldn't be null");
+        assertEquals(1, exams.size(), "There should be exactly 1 user in the list");
 
 
     }
@@ -127,7 +128,8 @@ public class ExamControllerTest {
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
                 "beschreibung1", "erstelldatum1", "aenderungsdatum1", 12);
-        User user = userRepository.findByEmail(registerRequest.getEmail()).get();
+        User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
+                new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
         exam1.setUser(user);
         examRepository.save(exam1);
@@ -160,7 +162,8 @@ public class ExamControllerTest {
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
                 "beschreibung1", "erstelldatum1", "aenderungsdatum1", 12);
-        User user = userRepository.findByEmail(registerRequest.getEmail()).get();
+        User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
+                new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
         exam1.setUser(user);
         examRepository.save(exam1);
@@ -190,7 +193,8 @@ public class ExamControllerTest {
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
                 "beschreibung1", "erstelldatum1", "aenderungsdatum1", 12);
-        User user = userRepository.findByEmail(registerRequest.getEmail()).get();
+        User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
+                new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
         exam1.setUser(user);
         examRepository.save(exam1);
@@ -209,7 +213,8 @@ public class ExamControllerTest {
                 .andExpect(jsonPath("$.anzahlFragen").value(12));
 
         // Then
-        Exam savedExam = examRepository.findById(exam1.getId()).get();
+        Exam savedExam = examRepository.findById(exam1.getId()).orElseThrow(() ->
+                new ResourceNotFoundException("Exam not found for ID:" + exam1.getId()));
         assertThat(savedExam.getPruefungsName()).isEqualTo(exam1.getPruefungsName());
         assertThat(savedExam.getInfo()).isEqualTo(exam1.getInfo());
         assertThat(savedExam.getBeschreibung()).isEqualTo(exam1.getBeschreibung());
@@ -229,7 +234,8 @@ public class ExamControllerTest {
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
                 "beschreibung1", "erstelldatum1", "aenderungsdatum1", 12);
-        User user = userRepository.findByEmail(registerRequest.getEmail()).get();
+        User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
+                new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
         exam1.setUser(user);
         examRepository.save(exam1);
@@ -255,7 +261,8 @@ public class ExamControllerTest {
                 .andExpect(jsonPath("$.anzahlFragen").value(13));
 
         // Then
-        Exam updatedExam = examRepository.findById(exam1.getId()).get();
+        Exam updatedExam = examRepository.findById(exam1.getId()).orElseThrow(() ->
+                new ResourceNotFoundException("Updated Exam not found for ID:" + exam1.getId()));
         assertThat(updatedExam.getPruefungsName()).isEqualTo(exam1.getPruefungsName());
         assertThat(updatedExam.getInfo()).isEqualTo(exam1.getInfo());
         assertThat(updatedExam.getBeschreibung()).isEqualTo(exam1.getBeschreibung());
@@ -275,7 +282,8 @@ public class ExamControllerTest {
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
                 "beschreibung1", "erstelldatum1", "aenderungsdatum1", 12);
-        User user = userRepository.findByEmail(registerRequest.getEmail()).get();
+        User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
+                new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
         exam1.setUser(user);
         examRepository.save(exam1);

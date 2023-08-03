@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kayikci.learningplatform.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +26,8 @@ public class Exam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
     @Length(max = 20)
     private String pruefungsName;
     @Length(max = 50)
@@ -35,7 +39,9 @@ public class Exam {
 
     @Length(max = 20)
     private String aenderungsDatum;
+
     @Max(300)
+    @Min(0)
     private int anzahlFragen;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -54,8 +60,6 @@ public class Exam {
         this.anzahlFragen = anzahlFragen;
 
     }
-
-
 
 
 

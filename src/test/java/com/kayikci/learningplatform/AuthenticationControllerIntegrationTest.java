@@ -1,12 +1,11 @@
 package com.kayikci.learningplatform;
 
-import com.kayikci.learningplatform.auth.AuthenticationController;
 import com.kayikci.learningplatform.auth.AuthenticationResponse;
 import com.kayikci.learningplatform.auth.RegisterRequest;
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +26,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
-public class AuthenticationControllerTest {
+public class AuthenticationControllerIntegrationTest {
     @Autowired
     private DataSource dataSource;
     @Container
