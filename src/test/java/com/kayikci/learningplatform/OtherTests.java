@@ -1,5 +1,6 @@
 package com.kayikci.learningplatform;
 
+
 import com.kayikci.learningplatform.auth.AuthenticationResponse;
 import com.kayikci.learningplatform.auth.AuthenticationService;
 import com.kayikci.learningplatform.auth.RegisterRequest;
