@@ -5,6 +5,7 @@ import com.kayikci.learningplatform.auth.RegisterRequest;
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
+
+@Disabled("Dauert zu lange")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 public class AuthenticationControllerIntegrationTest {

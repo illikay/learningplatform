@@ -1,6 +1,7 @@
 package com.kayikci.learningplatform.config;
 
 
+import com.kayikci.learningplatform.token.Token;
 import com.kayikci.learningplatform.token.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,7 +29,7 @@ public class LogoutService implements LogoutHandler {
       return;
     }
     jwt = authHeader.substring(7);
-    var storedToken = tokenRepository.findByToken(jwt)
+    Token storedToken = tokenRepository.findByToken(jwt)
         .orElse(null);
     if (storedToken != null) {
       storedToken.setExpired(true);

@@ -6,6 +6,7 @@ import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -21,7 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-  private final AuthenticationService authenticationService;
+  @Autowired
+  private AuthenticationService authenticationService;
 
 
 

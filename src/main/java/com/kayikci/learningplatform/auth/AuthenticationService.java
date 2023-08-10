@@ -11,10 +11,13 @@ import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,15 +40,15 @@ public class AuthenticationService {
 
   public AuthenticationResponse register(RegisterRequest request) {
 
-    var user = User.builder()
+    User user = User.builder()
         .firstname(request.getFirstname())
         .lastname(request.getLastname())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
         .role(Role.USER)
         .build();
-    var savedUser = userRepository.save(user);
-    var jwtToken = jwtService.generateToken(user);
+    User savedUser = userRepository.save(user);
+    String jwtToken = jwtService.generateToken(user);
     saveUserToken(savedUser, jwtToken);
     return AuthenticationResponse.builder()
         .token(jwtToken)
@@ -59,9 +62,9 @@ public class AuthenticationService {
             request.getPassword()
         )
     );
-    var user = userRepository.findByEmail(request.getEmail())
-        .orElseThrow();
-    var jwtToken = jwtService.generateToken(user);
+    User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new ResourceNotFoundException("User für E-Mail-Adresse " + request.getEmail()+ " not found"));
+    String jwtToken = jwtService.generateToken(user);
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
     return AuthenticationResponse.builder()
@@ -70,7 +73,7 @@ public class AuthenticationService {
   }
 
   private void saveUserToken(User user, String jwtToken) {
-    var token = Token.builder()
+    Token token = Token.builder()
         .user(user)
         .token(jwtToken)
         .tokenType(TokenType.BEARER)
@@ -81,7 +84,7 @@ public class AuthenticationService {
   }
 
   private void revokeAllUserTokens(User user) {
-    var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+    List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
     if (validUserTokens.isEmpty())
       return;
     validUserTokens.forEach(token -> {

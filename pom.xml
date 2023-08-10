@@ -14,7 +14,7 @@
     <name>learningplatform</name>
     <description>Lern Plattform</description>
     <properties>
-Ja        <java.version>17</java.version>
+        <java.version>17</java.version>
     </properties>
     <dependencies>
         <dependency>
