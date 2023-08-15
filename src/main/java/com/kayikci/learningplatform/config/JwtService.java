@@ -46,7 +46,7 @@ public class JwtService {
         .compact();
   }
 
-  public boolean isTokenValidForController(String token, String authUserName) {
+  public boolean isTokenValidForUser(String token, String authUserName) {
     String onlyToken = token.substring(7);
     final String username = extractUsername(onlyToken);
     return (username.equals(authUserName) && !isTokenExpired(onlyToken));

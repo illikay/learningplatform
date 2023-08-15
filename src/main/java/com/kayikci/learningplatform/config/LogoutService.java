@@ -17,6 +17,8 @@ public class LogoutService implements LogoutHandler {
 
   private final TokenRepository tokenRepository;
 
+  private final JwtService jwtService;
+
   @Override
   public void logout(
       HttpServletRequest request,
@@ -28,14 +30,19 @@ public class LogoutService implements LogoutHandler {
     if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
       return;
     }
+
+
     jwt = authHeader.substring(7);
+    if(jwtService.isTokenValidForUser(authHeader, authentication.getName())){
     Token storedToken = tokenRepository.findByToken(jwt)
         .orElse(null);
-    if (storedToken != null) {
-      storedToken.setExpired(true);
-      storedToken.setRevoked(true);
-      tokenRepository.save(storedToken);
-      SecurityContextHolder.clearContext();
+      if (storedToken != null) {
+        storedToken.setExpired(true);
+        storedToken.setRevoked(true);
+        tokenRepository.save(storedToken);
+
+      }
     }
+    SecurityContextHolder.clearContext();
   }
 }

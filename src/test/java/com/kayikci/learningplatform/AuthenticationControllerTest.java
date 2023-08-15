@@ -11,24 +11,29 @@ import com.kayikci.learningplatform.exception.ResourceNotFoundException;
 import com.kayikci.learningplatform.token.TokenRepository;
 import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,10 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AuthenticationControllerTest {
 
     @Autowired
-    private TestRestTemplate testRestTemplate;
+    private MockMvc mockMvc;
 
     @Autowired
-    private MockMvc mockMvc;
+    private TestRestTemplate testRestTemplate;
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -53,13 +58,12 @@ public class AuthenticationControllerTest {
     @Autowired
     private TokenRepository tokenRepository;
 
+
     @BeforeEach
     public void setUp() {
 
         tokenRepository.deleteAll();
         userRepository.deleteAll();
-
-
     }
 
     @AfterEach
@@ -68,50 +72,27 @@ public class AuthenticationControllerTest {
         tokenRepository.deleteAll();
         userRepository.deleteAll();
 
+
+
     }
 
 
-
-
-
-
-
-
-
     @Test
-    public void testRegisterUser() {
+    public void testRegisterUser() throws  Exception{
 
         RegisterRequest registerRequest = new RegisterRequest("firstname","lastname", "asdf@asdf.de", "Asdf0101!");
 
-        ResponseEntity<AuthenticationResponse> responseEntity = testRestTemplate.postForEntity("/usermanagement/register" , registerRequest, AuthenticationResponse.class);
+        ResponseEntity<AuthenticationResponse> authenticationResponseEntity = testRestTemplate.postForEntity("/usermanagement/register" , registerRequest, AuthenticationResponse.class);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        AuthenticationResponse authenticationResponse = responseEntity.getBody();
+
+        assertEquals(HttpStatus.OK, authenticationResponseEntity.getStatusCode());
+        AuthenticationResponse authenticationResponse = authenticationResponseEntity.getBody();
         assertThat(authenticationResponse).isNotNull();
         assertThat(authenticationResponse.getToken()).isNotNull();
 
 
-    }
-
-    @Test
-    public void testAuthenticateUser() throws Exception {
-
-        RegisterRequest registerRequest = new RegisterRequest("firstname2", "lastname2", "asdf2@asdf2.de", "Asdf0101!");
-        AuthenticationResponse authenticationResponse = authenticationService.register(registerRequest);
-        String token = authenticationResponse.getToken();
-
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest(registerRequest.getEmail(), registerRequest.getPassword());
-
-
-        mockMvc.perform(post("/usermanagement/authenticate")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(authenticationRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").isNotEmpty());
-
-        // Then
         User savedUser = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
-                        new ResourceNotFoundException("User not found for E-Mail: " + registerRequest.getEmail()));
+                new ResourceNotFoundException("User not found for E-Mail: " + registerRequest.getEmail()));
 
 
         assertThat(savedUser.getFirstname()).isEqualTo(registerRequest.getFirstname());
@@ -121,5 +102,53 @@ public class AuthenticationControllerTest {
         assertNotNull(savedUser.getId());
 
 
+
+
+
     }
+
+    @Test
+    public void testAuthenticateUser() throws InterruptedException {
+
+        RegisterRequest registerRequest = new RegisterRequest("firstname","lastname", "asdf@asdf.de", "Asdf0101!");
+
+
+        authenticationService.register(registerRequest);
+
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest(registerRequest.getEmail(), registerRequest.getPassword());
+
+        //Thread.sleep(2000);
+
+
+
+        ResponseEntity<AuthenticationResponse> responseEntity = testRestTemplate.postForEntity("/usermanagement/authenticate" ,
+                authenticationRequest, AuthenticationResponse.class);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        AuthenticationResponse authenticationResponse = responseEntity.getBody();
+        assertThat(authenticationResponse).isNotNull();
+        assertThat(authenticationResponse.getToken()).isNotNull();
+
+    }
+
+
+    @Test
+    public void testRegisterUserWithInvalidData() {
+
+        RegisterRequest registerRequest1 = new RegisterRequest("", "lastname2", "asdf1@jklö.de", "Asdf0101!");
+        RegisterRequest registerRequest2 = new RegisterRequest("firstname", "", "asdf2@asdf.de", "Asdf0101!");
+        RegisterRequest registerRequest3 = new RegisterRequest("firstname", "lastname", "InvalidEmail", "Asdf0101!");
+        RegisterRequest registerRequest4 = new RegisterRequest("firstname", "lastname", "asdf3@jklö.de", "InvalidPassword");
+
+        assertThrows(ConstraintViolationException.class, () -> authenticationService.register(registerRequest1));
+        assertThrows(ConstraintViolationException.class, () -> authenticationService.register(registerRequest2));
+        assertThrows(ConstraintViolationException.class, () -> authenticationService.register(registerRequest3));
+
+        //tests the behavior with an invalid password
+        ResponseEntity<AuthenticationResponse> response = testRestTemplate.postForEntity("/usermanagement/register" ,registerRequest4, AuthenticationResponse.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "HTTP Response status should be a Bad Request");
+
+    }
+
+
 }

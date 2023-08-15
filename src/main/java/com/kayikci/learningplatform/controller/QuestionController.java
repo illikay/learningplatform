@@ -38,14 +38,14 @@ public class QuestionController {
 
 
     @GetMapping("/exam/{examId}/questions")
-    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public Iterable<Question> getAllQuestionsByExamId(@RequestHeader("Authorization") String token , @PathVariable(value = "examId") Long examId) {
 
         return questionRepository.findByExamId(examId);
     }
 
     @GetMapping("/exam/{examId}/questions/{questionId}")
-    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     Optional<Question> getQuestionById(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                        @PathVariable(value = "questionId") Long questionId) {
         return questionRepository.findByIdAndExamId(questionId, examId);
@@ -53,7 +53,7 @@ public class QuestionController {
 
 
     @PostMapping("/exam/{examId}/questions")
-    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public Question createQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                    @RequestBody Question question) {
 
@@ -65,7 +65,7 @@ public class QuestionController {
     }
 
     @PutMapping("/exam/{examId}/questions/{questionId}")
-    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public Question updateQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                    @PathVariable(value = "questionId") Long questionId,
                                    @RequestBody Question questionRequest) {
@@ -85,7 +85,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/exam/{examId}/questions/{questionId}")
-    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public ResponseEntity<?> deleteQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                             @PathVariable(value = "questionId") Long questionId) {
         return questionRepository.findByIdAndExamId(questionId, examId).map(oldQuestion -> {

@@ -44,7 +44,7 @@ public class ExamController {
 
 
     @GetMapping("/exam")
-    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public ResponseEntity<Iterable<Exam>> getAllExamsByUserId(@RequestHeader("Authorization") String token) {
         String email = jwtService.extractUsernameForController(token);
         User user = userRepository.findByEmail(email).orElseThrow(() ->
@@ -56,7 +56,7 @@ public class ExamController {
     }
 
     @GetMapping("/exam/{examId}")
-    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     ResponseEntity<Exam> getExamByUserId(@RequestHeader("Authorization") String token, @PathVariable Long examId) {
         String email = jwtService.extractUsernameForController(token);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found for email:" + email));
@@ -67,7 +67,7 @@ public class ExamController {
 
 
     @PostMapping("/exam")
-    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public ResponseEntity<Exam> createExamByUserId(@RequestHeader("Authorization") String token,
                                            @RequestBody Exam exam) {
         String email = jwtService.extractUsernameForController(token);
@@ -79,7 +79,7 @@ public class ExamController {
     }
 
     @PutMapping("/exam/{examId}")
-    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public Exam updateExam(@RequestHeader("Authorization") String token, @PathVariable Long examId, @RequestBody Exam newExam) {
         String email = jwtService.extractUsernameForController(token);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found for email:" + email));
@@ -96,7 +96,7 @@ public class ExamController {
     }
 
     @DeleteMapping("/exam/{examId}")
-    @PreAuthorize("@jwtService.isTokenValidForController(#token, authentication.name)")
+    @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public ResponseEntity<?> deleteExam(@RequestHeader("Authorization") String token, @PathVariable Long examId) {
         String email = jwtService.extractUsernameForController(token);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found for email:" + email));

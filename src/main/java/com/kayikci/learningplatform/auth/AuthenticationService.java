@@ -9,6 +9,7 @@ import com.kayikci.learningplatform.token.TokenType;
 import com.kayikci.learningplatform.user.Role;
 import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +39,7 @@ public class AuthenticationService {
     return user != null;
   }
 
+
   public AuthenticationResponse register(RegisterRequest request) {
 
     User user = User.builder()
@@ -54,6 +56,7 @@ public class AuthenticationService {
         .token(jwtToken)
         .build();
   }
+
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
     authenticationManager.authenticate(
@@ -72,6 +75,7 @@ public class AuthenticationService {
         .build();
   }
 
+
   private void saveUserToken(User user, String jwtToken) {
     Token token = Token.builder()
         .user(user)
@@ -80,7 +84,13 @@ public class AuthenticationService {
         .expired(false)
         .revoked(false)
         .build();
-    tokenRepository.save(token);
+    if (!tokenRepository.existsByToken(jwtToken)) {
+        tokenRepository.save(token);
+    }
+    else{
+      System.out.println("Token existiert bereits.");
+    }
+
   }
 
   private void revokeAllUserTokens(User user) {

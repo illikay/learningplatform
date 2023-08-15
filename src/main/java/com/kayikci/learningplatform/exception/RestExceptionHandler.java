@@ -37,10 +37,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+   /* @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDuplicateEntryException(DataIntegrityViolationException ex) {
             return new ResponseEntity<>("Email-Adresse existiert bereits.", HttpStatus.CONFLICT);
-    }
+    }*/
 
 
 
