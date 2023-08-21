@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,15 +30,19 @@ public class Exam {
 
     @NotBlank
     @Length(max = 20)
+    @Column(unique = true)
     private String pruefungsName;
     @Length(max = 50)
     private String info;
     @Length(max = 50)
     private String beschreibung;
-    @Length(max = 20)
+
+
+    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$", message = "Ungültiges Datum eingegeben.")
     private String erstellDatum;
 
-    @Length(max = 20)
+
+    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$", message = "Ungültiges Datum eingegeben.")
     private String aenderungsDatum;
 
     @Max(300)

@@ -34,12 +34,7 @@ public class ExamController {
 
     }
 
-    @GetMapping("/authenticatedUserId/{email}")
-    public ResponseEntity<Long> getAuthenticatedUser(@PathVariable(value = "email") String email) {
-        User authenticatedUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found for email: " + email));
-        return ResponseEntity.ok(authenticatedUser.getId());
-    }
+
 
 
 

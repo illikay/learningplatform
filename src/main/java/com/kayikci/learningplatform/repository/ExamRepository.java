@@ -10,5 +10,7 @@ import java.util.Optional;
 public interface ExamRepository extends JpaRepository<Exam, Long> {
     Iterable<Exam> findByUserId(Long userId);
 
+    Optional<Exam> findByPruefungsName(String pruefungsName);
+
     Optional<Exam> findByIdAndUserId(Long id, Long userId);
 }

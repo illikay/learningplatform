@@ -11,7 +11,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     //Iterable<Exam> findByUserId(Long userId);
 
-
+    Optional<Question> findByQuestionFrage(String questionFrage);
     Optional<Question> findByIdAndExamId(Long id, Long examId);
 
 

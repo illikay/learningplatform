@@ -3,6 +3,9 @@ package com.kayikci.learningplatform.auth;
 import com.kayikci.learningplatform.config.JwtService;
 import com.kayikci.learningplatform.config.LogoutService;
 
+import com.kayikci.learningplatform.exception.ResourceNotFoundException;
+import com.kayikci.learningplatform.user.User;
+import com.kayikci.learningplatform.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -22,7 +25,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/usermanagement")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
@@ -30,26 +32,25 @@ public class AuthenticationController {
   private final AuthenticationService authenticationService;
   private final LogoutService logoutService;
   private final JwtService jwtService;
+  private final UserRepository userRepository;
 
 
 
 
 
-  @PostMapping("/register")
+  @PostMapping("/usermanagement/register")
   public ResponseEntity<AuthenticationResponse> register(
           @Validated @RequestBody RegisterRequest request) {
     return ResponseEntity.ok(authenticationService.register(request));
   }
 
 
-  @PostMapping("/authenticate")
+  @PostMapping("/usermanagement/authenticate")
   public ResponseEntity<AuthenticationResponse> authenticate(
           @Validated @RequestBody AuthenticationRequest request
   ) {
     return ResponseEntity.ok(authenticationService.authenticate(request));
   }
-
-
 
 
 

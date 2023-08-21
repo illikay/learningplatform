@@ -4,11 +4,13 @@ import com.kayikci.learningplatform.auth.AuthenticationResponse;
 import com.kayikci.learningplatform.auth.AuthenticationService;
 import com.kayikci.learningplatform.auth.RegisterRequest;
 import com.kayikci.learningplatform.domain.Exam;
+import com.kayikci.learningplatform.domain.Question;
 import com.kayikci.learningplatform.exception.ResourceNotFoundException;
 import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.token.TokenRepository;
 import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -82,11 +85,12 @@ public class ExamControllerNegativeTest {
         AuthenticationResponse authenticationResponse = authenticationService.register(registerRequest);
         String token = authenticationResponse.getToken();
 
-        Exam invalidExam = new Exam(null , "prüfungsinfo1", // Ungültige Werte hier
-                "beschreibung1", "erstelldatum1", "aenderungsdatum1", 12);
-
+        //pruefungsname darf nicht null sein
+        Exam invalidExam = new Exam(null , "prüfungsinfo1",
+                "beschreibung1", "12.08.2023", "12.08.2023", 12);
+        //anzahl Fragen darf nicht negativ sein
         Exam invalidExam2 = new Exam("prüfungsname1" , "prüfungsinfo1",
-                "beschreibung1", "erstelldatum1", "aenderungsdatum1", -4); // Negative Anzahl von Fragen
+                "beschreibung1", "12.08.2023", "12.08.2023", -4);
 
         // When
         mockMvc.perform(post("/exam")
@@ -110,7 +114,7 @@ public class ExamControllerNegativeTest {
         String token = authenticationResponse.getToken();
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
-                "beschreibung1", "erstelldatum1", "aenderungsdatum1", 12);
+                "beschreibung1", "12.08.2023", "12.08.2023", 12);
         User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
                 new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
@@ -122,6 +126,30 @@ public class ExamControllerNegativeTest {
 
         Optional<Exam> result2 = examRepository.findByIdAndUserId(-1L, user.getId()); //Invalid Exam-Id
         assertFalse(result2.isPresent());
+
+    }
+
+    @Test
+    public void testSaveExamWithInvalidData() {
+        //Ungültiges Datum in erstellDatum
+        Exam invalidExam1 = new Exam("pruefungsname1" , "prüfungsinfo1",
+                "beschreibung1", "InvalidDate", "12.08.2023", 12);
+
+        //Ungültiges Datum in aenderungsDatum
+        Exam invalidExam2 = new Exam("pruefungsname2" , "prüfungsinfo1",
+                "beschreibung1", "12.08.2023", "InvalidDate", 12);
+
+        //Verletzung des Unique-Constraints von pruefungsName
+        Exam invalidExam3 = new Exam("pruefungsname1" , "prüfungsinfo1",
+                "beschreibung1", "12.08.2023", "12.08.2023", 12);
+
+
+        assertThrows(ConstraintViolationException.class, () -> examRepository.save(invalidExam1));
+        assertThrows(ConstraintViolationException.class, () -> examRepository.save(invalidExam2));
+        assertThrows(DataIntegrityViolationException.class, () -> examRepository.save(invalidExam3));
+
+
+
 
     }
 

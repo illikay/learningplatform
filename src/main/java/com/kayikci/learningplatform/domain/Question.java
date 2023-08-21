@@ -4,6 +4,7 @@ package com.kayikci.learningplatform.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kayikci.learningplatform.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,16 +26,20 @@ public class Question {
     private Long id;
 
     @Length(max = 50)
+    @Column(unique = true)
     private String questionFrage;
     @Length(max = 50)
     private String  questionHinweis;
 
     @Length(max = 50)
     private String questionLoesung;
-    @Length(max = 20)
+
+
+    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$", message = "Ungültiges Datum eingegeben.")
     private String erstellDatum;
 
-    @Length(max = 20)
+
+    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$", message = "Ungültiges Datum eingegeben.")
     private String aenderungsDatum;
 
     private boolean isBeantwortet;

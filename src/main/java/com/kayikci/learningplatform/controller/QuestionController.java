@@ -90,7 +90,7 @@ public class QuestionController {
                                             @PathVariable(value = "questionId") Long questionId) {
         return questionRepository.findByIdAndExamId(questionId, examId).map(oldQuestion -> {
             questionRepository.delete(oldQuestion);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }).orElseThrow(() -> new ResourceNotFoundException("Question not found with id " + questionId + " and ExamId " + examId));
     }
 
