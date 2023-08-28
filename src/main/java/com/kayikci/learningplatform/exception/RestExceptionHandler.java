@@ -36,6 +36,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
        return ResponseEntity.badRequest().body(errors.toString());
     }
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public String handleAuthenticationException(AuthenticationException ex) {
+        return ex.getMessage();
+    }
+
 
    /* @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDuplicateEntryException(DataIntegrityViolationException ex) {

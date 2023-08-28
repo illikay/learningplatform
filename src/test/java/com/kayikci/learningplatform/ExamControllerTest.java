@@ -213,8 +213,7 @@ public class ExamControllerTest {
                 .andExpect(jsonPath("$.anzahlFragen").value(12));
 
         Exam savedExam = examRepository.findByPruefungsName(exam1.getPruefungsName()).orElseThrow(() ->
-                new ResourceNotFoundException("Exam not found for pruefungsName: " + exam1.getPruefungsName()));
-
+                new ResourceNotFoundException("Exam not found für Prüfungsname: " + exam1.getPruefungsName()));
 
         assertThat(savedExam.getPruefungsName()).isEqualTo(exam1.getPruefungsName());
         assertThat(savedExam.getInfo()).isEqualTo(exam1.getInfo());

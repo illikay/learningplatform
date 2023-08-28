@@ -63,6 +63,18 @@ public class Question {
 
     }
 
+    public Question(Long id, String questionFrage, String questionHinweis, String questionLoesung, String erstellDatum, String aenderungsDatum, boolean isBeantwortet) {
+        this.id = id;
+        this.questionFrage = questionFrage;
+        this.questionHinweis = questionHinweis;
+        this.questionLoesung = questionLoesung;
+        this.erstellDatum = erstellDatum;
+        this.aenderungsDatum = aenderungsDatum;
+        this.isBeantwortet = isBeantwortet;
+
+
+    }
+
 
 
 

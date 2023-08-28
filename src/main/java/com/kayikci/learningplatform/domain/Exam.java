@@ -66,6 +66,17 @@ public class Exam {
 
     }
 
+    public Exam(Long id, String pruefungsName, String info, String beschreibung, String erstellDatum, String aenderungsDatum, int anzahlFragen) {
+        this.id = id;
+        this.pruefungsName = pruefungsName;
+        this.info = info;
+        this.beschreibung = beschreibung;
+        this.erstellDatum = erstellDatum;
+        this.aenderungsDatum = aenderungsDatum;
+        this.anzahlFragen = anzahlFragen;
+
+    }
+
 
 
 }

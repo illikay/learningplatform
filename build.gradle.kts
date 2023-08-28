@@ -56,6 +56,10 @@ dependencies {
     testImplementation("org.hamcrest:hamcrest-all:1.3")
 
 
+    implementation("org.springframework.boot:spring-boot-starter-logging:3.1.3")
+
+
+
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
