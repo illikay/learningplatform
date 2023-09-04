@@ -8,6 +8,7 @@ import com.kayikci.learningplatform.auth.AuthenticationService;
 import com.kayikci.learningplatform.auth.RegisterRequest;
 import com.kayikci.learningplatform.domain.Exam;
 import com.kayikci.learningplatform.exception.ResourceNotFoundException;
+import com.kayikci.learningplatform.exception.UserAlreadyExistsException;
 import com.kayikci.learningplatform.token.TokenRepository;
 import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -118,10 +120,6 @@ public class AuthenticationControllerTest {
 
         AuthenticationRequest authenticationRequest = new AuthenticationRequest(registerRequest.getEmail(), registerRequest.getPassword());
 
-        //Thread.sleep(2000);
-
-
-
         ResponseEntity<AuthenticationResponse> responseEntity = testRestTemplate.postForEntity("/usermanagement/authenticate" ,
                 authenticationRequest, AuthenticationResponse.class);
 
@@ -140,12 +138,20 @@ public class AuthenticationControllerTest {
         RegisterRequest registerRequest3 = new RegisterRequest("firstname", "lastname", "InvalidEmail", "Asdf0101!");
         RegisterRequest registerRequest4 = new RegisterRequest("firstname", "lastname", "asdf3@jklö.de", "InvalidPassword");
 
+        //erfolgreiches Registrieren eines Benutzers
+        RegisterRequest registerRequest5 = new RegisterRequest("firstname", "lastname", "asdf3@jklö.de", "Asdf0101!");
+        authenticationService.register(registerRequest5);
+
+        //E-Mail-Adresse ist unique, E-mail-Adresse existiert bereits
+        RegisterRequest registerRequest6 = new RegisterRequest("firstname", "lastname", "asdf3@jklö.de", "Asdf0101!");
+
         assertThrows(ConstraintViolationException.class, () -> authenticationService.register(registerRequest1));
         assertThrows(ConstraintViolationException.class, () -> authenticationService.register(registerRequest2));
         assertThrows(ConstraintViolationException.class, () -> authenticationService.register(registerRequest3));
+        assertThrows(UserAlreadyExistsException.class, () -> authenticationService.register(registerRequest6));
 
         //tests the behavior with an invalid password
-        ResponseEntity<AuthenticationResponse> response = testRestTemplate.postForEntity("/usermanagement/register" ,registerRequest4, AuthenticationResponse.class);
+        ResponseEntity<RegisterRequest> response = testRestTemplate.postForEntity("/usermanagement/register" , registerRequest4, RegisterRequest.class);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "HTTP Response status should be a Bad Request");
 
     }

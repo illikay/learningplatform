@@ -54,7 +54,7 @@ public class AuthenticationController {
 
 
 
-  /*@ExceptionHandler(MethodArgumentNotValidException.class)
+ /* @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
     // Get the validation errors and create a custom error response
     List<String> errors = ex.getBindingResult()
@@ -65,8 +65,8 @@ public class AuthenticationController {
 
     // Return a response entity with the error response and a bad request status
     return ResponseEntity.badRequest().body(errors.toString());
-  }*/
-
+  }
+*/
 
 
 }

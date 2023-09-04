@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.UUID;
 import java.util.function.Function;
 
 
@@ -46,12 +47,15 @@ public class JwtService {
               .builder()
               .setClaims(extraClaims)
               .setSubject(userDetails.getUsername())
+              .setId(UUID.randomUUID().toString())
               .setIssuedAt(new Date(System.currentTimeMillis()))
               .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
               .signWith(getSignInKey(), SignatureAlgorithm.HS256)
               .compact();
 
   }
+
+
 
   public boolean isTokenValidForUser(String token, String authUserName) {
     String onlyToken = token.substring(7);

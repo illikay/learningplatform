@@ -30,7 +30,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    private static final int MAX_RETRIES = 10;
+
 
     private final Logger log = LoggerFactory.getLogger( getClass() );
 
@@ -78,15 +78,6 @@ public class AuthenticationService {
     }
 
     private void saveUserToken(User user, String jwtToken) {
-        int retryCount = 0;
-        while (tokenRepository.existsByToken(jwtToken) && retryCount < MAX_RETRIES) {
-            jwtToken = jwtService.generateToken(user);
-            retryCount++;
-        }
-        if (retryCount == MAX_RETRIES) {
-            log.error("Maximale Anzahl von Token-Generierungsversuchen erreicht. Anzahl: {}", retryCount);
-            throw new IllegalStateException("Maximale Anzahl von Token-Generierungsversuchen erreicht");
-        }
         Token token = Token.builder()
                 .user(user)
                 .token(jwtToken)
