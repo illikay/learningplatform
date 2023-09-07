@@ -25,13 +25,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class QuestionControllerTest {
@@ -54,9 +57,12 @@ public class QuestionControllerTest {
     private TestRestTemplate testRestTemplate;
     @Autowired
     private QuestionRepository questionRepository;
+    
+    static LocalDateTime dateTime;
 
     @BeforeAll
     static void beforeAllTests() {
+        dateTime = LocalDateTime.of(2023, 9, 7, 13, 45, 30);
 
     }
 
@@ -89,7 +95,7 @@ public class QuestionControllerTest {
         String token = authenticationResponse.getToken();
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
-                "beschreibung1", "15.08.2023", "15.08.2023", 12);
+                "beschreibung1", dateTime, dateTime, 12);
         User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
                new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
@@ -97,7 +103,7 @@ public class QuestionControllerTest {
         examRepository.save(exam1);
 
         Question question = new Question("Frage1", "Hinweis1","Lösung1",
-                "15.08.2023", "15.08.2023", false);
+                dateTime, dateTime, false);
 
         question.setExam(exam1);
         questionRepository.save(question);
@@ -112,8 +118,8 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$[0].questionFrage").value("Frage1"))
                 .andExpect(jsonPath("$[0].questionHinweis").value("Hinweis1"))
                 .andExpect(jsonPath("$[0].questionLoesung").value("Lösung1"))
-                .andExpect(jsonPath("$[0].erstellDatum").value("15.08.2023"))
-                .andExpect(jsonPath("$[0].aenderungsDatum").value("15.08.2023"))
+                .andExpect(jsonPath("$[0].erstellDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$[0].aenderungsDatum").value(dateTime.toString()))
                 .andExpect(jsonPath("$[0].beantwortet").value(false));
     }
 
@@ -128,7 +134,7 @@ public class QuestionControllerTest {
         String token = authenticationResponse.getToken();
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
-                "beschreibung1", "15.08.2023", "15.08.2023", 12);
+                "beschreibung1", dateTime, dateTime, 12);
         User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
                 new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
@@ -136,7 +142,7 @@ public class QuestionControllerTest {
         examRepository.save(exam1);
 
         Question question1 = new Question("Frage1", "Hinweis1","Lösung1",
-                "15.08.2023", "15.08.2023", false);
+                dateTime, dateTime, false);
 
         question1.setExam(exam1);
         questionRepository.save(question1);
@@ -150,8 +156,8 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.questionFrage").value("Frage1"))
                 .andExpect(jsonPath("$.questionHinweis").value("Hinweis1"))
                 .andExpect(jsonPath("$.questionLoesung").value("Lösung1"))
-                .andExpect(jsonPath("$.erstellDatum").value("15.08.2023"))
-                .andExpect(jsonPath("$.aenderungsDatum").value("15.08.2023"))
+                .andExpect(jsonPath("$.erstellDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$.aenderungsDatum").value(dateTime.toString()))
                 .andExpect(jsonPath("$.beantwortet").value(false));
     }
 
@@ -165,7 +171,7 @@ public class QuestionControllerTest {
         String token = authenticationResponse.getToken();
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
-                "beschreibung1", "15.08.2023", "15.08.2023", 12);
+                "beschreibung1", dateTime, dateTime, 12);
         User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
                 new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
@@ -173,7 +179,7 @@ public class QuestionControllerTest {
         examRepository.save(exam1);
 
         Question question1 = new Question("Frage1", "Hinweis1","Lösung1",
-                "15.08.2023", "15.08.2023", false);
+                dateTime, dateTime, false);
 
         question1.setExam(exam1);
         //questionRepository.save(question1);
@@ -188,8 +194,8 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.questionFrage").value("Frage1"))
                 .andExpect(jsonPath("$.questionHinweis").value("Hinweis1"))
                 .andExpect(jsonPath("$.questionLoesung").value("Lösung1"))
-                .andExpect(jsonPath("$.erstellDatum").value("15.08.2023"))
-                .andExpect(jsonPath("$.aenderungsDatum").value("15.08.2023"))
+                .andExpect(jsonPath("$.erstellDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$.aenderungsDatum").value(dateTime.toString()))
                 .andExpect(jsonPath("$.beantwortet").value(false));
         //Todo Question-Controller-Test ausfüllen
         // Then
@@ -214,7 +220,7 @@ public class QuestionControllerTest {
         String token = authenticationResponse.getToken();
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
-                "beschreibung1", "15.08.2023", "15.08.2023", 12);
+                "beschreibung1", dateTime, dateTime, 12);
         User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
                 new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
@@ -222,7 +228,7 @@ public class QuestionControllerTest {
         examRepository.save(exam1);
 
         Question question1 = new Question("Frage1", "Hinweis1","Lösung1",
-                "15.08.2023", "15.08.2023", false);
+                dateTime, dateTime, false);
 
         question1.setExam(exam1);
         questionRepository.save(question1);
@@ -230,8 +236,8 @@ public class QuestionControllerTest {
         question1.setQuestionFrage("Frage2");
         question1.setQuestionHinweis("Hinweis2");
         question1.setQuestionLoesung("Lösung2");
-        question1.setErstellDatum("16.08.2023");
-        question1.setAenderungsDatum("16.08.2023");
+        question1.setErstellDatum(dateTime);
+        question1.setAenderungsDatum(dateTime);
         question1.setBeantwortet(true);
 
 
@@ -244,8 +250,8 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.questionFrage").value("Frage2"))
                 .andExpect(jsonPath("$.questionHinweis").value("Hinweis2"))
                 .andExpect(jsonPath("$.questionLoesung").value("Lösung2"))
-                .andExpect(jsonPath("$.erstellDatum").value("16.08.2023"))
-                .andExpect(jsonPath("$.aenderungsDatum").value("16.08.2023"))
+                .andExpect(jsonPath("$.erstellDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$.aenderungsDatum").value(dateTime.toString()))
                 .andExpect(jsonPath("$.beantwortet").value(true));
 
         // Then
@@ -270,7 +276,7 @@ public class QuestionControllerTest {
         String token = authenticationResponse.getToken();
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
-                "beschreibung1", "15.08.2023", "15.08.2023", 12);
+                "beschreibung1", dateTime, dateTime, 12);
         User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
                 new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
@@ -278,7 +284,7 @@ public class QuestionControllerTest {
         examRepository.save(exam1);
 
         Question question1 = new Question("Frage1", "Hinweis1","Lösung1",
-                "15.08.2023", "15.08.2023", false);
+                dateTime, dateTime, false);
 
         question1.setExam(exam1);
         questionRepository.save(question1);

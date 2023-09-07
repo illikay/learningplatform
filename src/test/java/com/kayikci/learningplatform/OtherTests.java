@@ -14,11 +14,14 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 import static io.restassured.RestAssured.when;
@@ -42,6 +45,14 @@ public class OtherTests {
     @LocalServerPort
     private int port;
 
+    static LocalDateTime dateTime;
+
+    @BeforeAll
+    static void beforeAllTests() {
+        dateTime = LocalDateTime.of(2023, 9, 7, 13, 45, 30);
+
+    }
+
     @Before
     public void setup() {
 
@@ -56,7 +67,7 @@ public class OtherTests {
         String token = authenticationResponse.getToken();
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
-                "beschreibung1", "13.08.2023", "13.08.2023", 12);
+                "beschreibung1", dateTime, dateTime, 12);
         User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
                 new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 

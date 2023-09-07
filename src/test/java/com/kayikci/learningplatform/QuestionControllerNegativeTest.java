@@ -3,12 +3,19 @@ package com.kayikci.learningplatform;
 import com.kayikci.learningplatform.auth.AuthenticationResponse;
 import com.kayikci.learningplatform.auth.AuthenticationService;
 import com.kayikci.learningplatform.auth.RegisterRequest;
+import com.kayikci.learningplatform.domain.Exam;
 import com.kayikci.learningplatform.domain.Question;
+import com.kayikci.learningplatform.exception.ResourceNotFoundException;
 import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.repository.QuestionRepository;
 import com.kayikci.learningplatform.token.TokenRepository;
+import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
 import jakarta.validation.ConstraintViolationException;
+import net.bytebuddy.asm.Advice;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +29,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(SpringExtension.class)
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class QuestionControllerNegativeTest {
@@ -52,25 +62,65 @@ public class QuestionControllerNegativeTest {
     @Autowired
     private QuestionRepository questionRepository;
 
+    static LocalDateTime dateTime;
+
+    @BeforeAll
+    static void beforeAllTests() {
+        dateTime = LocalDateTime.of(2023, 9, 7, 13, 45, 30);
+
+    }
+
+    @BeforeEach
+    public void setUp() {
+        questionRepository.deleteAll();
+        examRepository.deleteAll();
+        tokenRepository.deleteAll();
+        userRepository.deleteAll();
+
+
+    }
+
+    @AfterEach
+    public void afterSetup() {
+        questionRepository.deleteAll();
+        examRepository.deleteAll();
+        tokenRepository.deleteAll();
+        userRepository.deleteAll();
+
+    }
+
 
     @Test
     public void testCreateQuestionWithInvalidData() {
 
-        //Ungültiges Datum
-        Question invalidQuestion1 = new Question("Frage1", "Hinweis1","Lösung1",
-                "InvalidDate", "15.08.2023", false);
-        //Ungültiges Datum
-        Question invalidQuestion2 = new Question("Frage2", "Hinweis1","Lösung1",
-                "15.08.2023", "InvalidDate", false);
+        RegisterRequest registerRequest = new RegisterRequest("firstname","lastname", "asdf@asdf.de", "Asdf0101!");
+
+        AuthenticationResponse authenticationResponse = authenticationService.register(registerRequest);
+        String token = authenticationResponse.getToken();
+
+        Exam exam1 = new Exam("pruefungsname1", "info1",
+                "beschreibung1", dateTime, dateTime, 12);
+        User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
+                new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
+
+        exam1.setUser(user);
+        examRepository.save(exam1);
+
+
+        Question question1 = new Question("Frage2", "Hinweis1","Lösung1",
+                dateTime, dateTime, false);
+        question1.setExam(exam1);
+
+        questionRepository.save(question1);
 
         //Verletzung des Unique-Constraints von questionFrage
-        Question invalidQuestion3 = new Question("Frage2", "Hinweis1","Lösung1",
-                "15.08.2023", "15.08.2023", false);
+        Question invalidQuestion = new Question("Frage2", "Hinweis2","Lösung2",
+                dateTime, dateTime, true);
+
+        invalidQuestion.setExam(exam1);
 
 
-        assertThrows(ConstraintViolationException.class, () -> questionRepository.save(invalidQuestion1));
-        assertThrows(ConstraintViolationException.class, () -> questionRepository.save(invalidQuestion2));
-        assertThrows(DataIntegrityViolationException.class, () -> questionRepository.save(invalidQuestion3));
+        assertThrows(DataIntegrityViolationException.class, () -> questionRepository.save(invalidQuestion));
 
 
 

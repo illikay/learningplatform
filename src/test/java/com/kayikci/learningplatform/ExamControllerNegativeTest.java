@@ -30,6 +30,8 @@ import org.springframework.http.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 
-@ExtendWith(SpringExtension.class)
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class ExamControllerNegativeTest {
@@ -63,9 +65,12 @@ public class ExamControllerNegativeTest {
 
     @LocalServerPort
     private int port;
+    
+    static LocalDateTime dateTime;
 
     @BeforeAll
     static void beforeAllTests() {
+        dateTime = LocalDateTime.of(2023, 9, 7, 13, 45, 30);
 
     }
 
@@ -87,10 +92,10 @@ public class ExamControllerNegativeTest {
 
         //pruefungsname darf nicht null sein
         Exam invalidExam = new Exam(null , "prüfungsinfo1",
-                "beschreibung1", "12.08.2023", "12.08.2023", 12);
+                "beschreibung1", dateTime, dateTime, 12);
         //anzahl Fragen darf nicht negativ sein
         Exam invalidExam2 = new Exam("prüfungsname1" , "prüfungsinfo1",
-                "beschreibung1", "12.08.2023", "12.08.2023", -4);
+                "beschreibung1", dateTime, dateTime, -4);
 
         // When
         mockMvc.perform(post("/exam")
@@ -114,7 +119,7 @@ public class ExamControllerNegativeTest {
         String token = authenticationResponse.getToken();
 
         Exam exam1 = new Exam("pruefungsname1", "info1",
-                "beschreibung1", "12.08.2023", "12.08.2023", 12);
+                "beschreibung1", dateTime, dateTime, 12);
         User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
                 new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
 
@@ -131,22 +136,28 @@ public class ExamControllerNegativeTest {
 
     @Test
     public void testSaveExamWithInvalidData() {
-        //Ungültiges Datum in erstellDatum
-        Exam invalidExam1 = new Exam("pruefungsname1" , "prüfungsinfo1",
-                "beschreibung1", "InvalidDate", "12.08.2023", 12);
 
-        //Ungültiges Datum in aenderungsDatum
-        Exam invalidExam2 = new Exam("pruefungsname2" , "prüfungsinfo1",
-                "beschreibung1", "12.08.2023", "InvalidDate", 12);
+        RegisterRequest registerRequest = new RegisterRequest("firstname","lastname", "asdf@asdf.de", "Asdf0101!");
+        AuthenticationResponse authenticationResponse = authenticationService.register(registerRequest);
+        String token = authenticationResponse.getToken();
 
-        //Verletzung des Unique-Constraints von pruefungsName
-        Exam invalidExam3 = new Exam("pruefungsname1" , "prüfungsinfo1",
-                "beschreibung1", "12.08.2023", "12.08.2023", 12);
+        Exam exam1 = new Exam("pruefungsname1", "info1",
+                "beschreibung1", dateTime, dateTime, 12);
+        User user = userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(() ->
+                new ResourceNotFoundException("User not found for email:" + registerRequest.getEmail()));
+
+        exam1.setUser(user);
+        examRepository.save(exam1);
 
 
-        assertThrows(ConstraintViolationException.class, () -> examRepository.save(invalidExam1));
-        assertThrows(ConstraintViolationException.class, () -> examRepository.save(invalidExam2));
-        assertThrows(DataIntegrityViolationException.class, () -> examRepository.save(invalidExam3));
+
+        //Verletzung des Unique-Constraints von pruefungsName, pruefungsname sollte nicht doppelt vorhanden sein
+        Exam invalidExam2 = new Exam("pruefungsname1" , "prüfungsinfo2",
+                "beschreibung2", dateTime, dateTime, 15);
+        invalidExam2.setUser(user);
+
+
+        assertThrows(DataIntegrityViolationException.class, () -> examRepository.save(invalidExam2));
 
 
 

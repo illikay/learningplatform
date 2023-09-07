@@ -1,7 +1,12 @@
 package com.kayikci.learningplatform.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.kayikci.learningplatform.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
@@ -12,6 +17,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Length;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -35,12 +43,16 @@ public class Question {
     private String questionLoesung;
 
 
-    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$", message = "Ungültiges Datum eingegeben.")
-    private String erstellDatum;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime erstellDatum;
 
 
-    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$", message = "Ungültiges Datum eingegeben.")
-    private String aenderungsDatum;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime aenderungsDatum;
 
     private boolean isBeantwortet;
 
@@ -51,7 +63,7 @@ public class Question {
     @JsonIgnore
     private Exam exam;
 
-    public Question(String questionFrage, String questionHinweis, String questionLoesung, String erstellDatum, String aenderungsDatum, boolean isBeantwortet) {
+    public Question(String questionFrage, String questionHinweis, String questionLoesung, LocalDateTime erstellDatum, LocalDateTime aenderungsDatum, boolean isBeantwortet) {
 
         this.questionFrage = questionFrage;
         this.questionHinweis = questionHinweis;
@@ -63,17 +75,7 @@ public class Question {
 
     }
 
-    public Question(Long id, String questionFrage, String questionHinweis, String questionLoesung, String erstellDatum, String aenderungsDatum, boolean isBeantwortet) {
-        this.id = id;
-        this.questionFrage = questionFrage;
-        this.questionHinweis = questionHinweis;
-        this.questionLoesung = questionLoesung;
-        this.erstellDatum = erstellDatum;
-        this.aenderungsDatum = aenderungsDatum;
-        this.isBeantwortet = isBeantwortet;
 
-
-    }
 
 
 

@@ -55,6 +55,9 @@ dependencies {
     testImplementation("io.rest-assured:rest-assured:5.3.1")
     testImplementation("org.hamcrest:hamcrest-all:1.3")
 
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+
 
     implementation("org.springframework.boot:spring-boot-starter-logging:3.1.3")
 

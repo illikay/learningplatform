@@ -1,7 +1,12 @@
 package com.kayikci.learningplatform.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.kayikci.learningplatform.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -15,6 +20,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Length;
+
+import java.time.LocalDateTime;
 
 
 @Data
@@ -38,12 +45,15 @@ public class Exam {
     private String beschreibung;
 
 
-    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$", message = "Ungültiges Datum eingegeben.")
-    private String erstellDatum;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime erstellDatum;
 
 
-    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$", message = "Ungültiges Datum eingegeben.")
-    private String aenderungsDatum;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime aenderungsDatum;
 
     @Max(300)
     @Min(0)
@@ -56,7 +66,7 @@ public class Exam {
     private User user;
 
 
-    public Exam(String pruefungsName, String info, String beschreibung, String erstellDatum, String aenderungsDatum, int anzahlFragen) {
+    public Exam(String pruefungsName, String info, String beschreibung, LocalDateTime erstellDatum, LocalDateTime aenderungsDatum, int anzahlFragen) {
         this.pruefungsName = pruefungsName;
         this.info = info;
         this.beschreibung = beschreibung;
@@ -66,16 +76,7 @@ public class Exam {
 
     }
 
-    public Exam(Long id, String pruefungsName, String info, String beschreibung, String erstellDatum, String aenderungsDatum, int anzahlFragen) {
-        this.id = id;
-        this.pruefungsName = pruefungsName;
-        this.info = info;
-        this.beschreibung = beschreibung;
-        this.erstellDatum = erstellDatum;
-        this.aenderungsDatum = aenderungsDatum;
-        this.anzahlFragen = anzahlFragen;
 
-    }
 
 
 
