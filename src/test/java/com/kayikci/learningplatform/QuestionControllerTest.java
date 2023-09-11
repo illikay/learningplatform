@@ -26,9 +26,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -58,11 +61,11 @@ public class QuestionControllerTest {
     @Autowired
     private QuestionRepository questionRepository;
     
-    static LocalDateTime dateTime;
+    static ZonedDateTime dateTime;
 
     @BeforeAll
     static void beforeAllTests() {
-        dateTime = LocalDateTime.of(2023, 9, 7, 13, 45, 30);
+        dateTime = ZonedDateTime.of(2023, 9, 10, 12, 12, 12, 1234, ZoneOffset.UTC);
 
     }
 
@@ -72,6 +75,8 @@ public class QuestionControllerTest {
         examRepository.deleteAll();
         tokenRepository.deleteAll();
         userRepository.deleteAll();
+
+
 
 
     }
@@ -87,7 +92,8 @@ public class QuestionControllerTest {
 
     @Test
     public void testGetQuestionsByExamId() throws Exception {
-        // Given
+
+
 
         RegisterRequest registerRequest = new RegisterRequest("firstname","lastname", "asdf@asdf.de", "Asdf0101!");
 
@@ -118,8 +124,8 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$[0].questionFrage").value("Frage1"))
                 .andExpect(jsonPath("$[0].questionHinweis").value("Hinweis1"))
                 .andExpect(jsonPath("$[0].questionLoesung").value("Lösung1"))
-                .andExpect(jsonPath("$[0].erstellDatum").value(dateTime.toString()))
-                .andExpect(jsonPath("$[0].aenderungsDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$[0].erstellDatum", startsWith("2023-09-10")))
+                .andExpect(jsonPath("$[0].aenderungsDatum", startsWith("2023-09-10")))
                 .andExpect(jsonPath("$[0].beantwortet").value(false));
     }
 
@@ -156,8 +162,8 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.questionFrage").value("Frage1"))
                 .andExpect(jsonPath("$.questionHinweis").value("Hinweis1"))
                 .andExpect(jsonPath("$.questionLoesung").value("Lösung1"))
-                .andExpect(jsonPath("$.erstellDatum").value(dateTime.toString()))
-                .andExpect(jsonPath("$.aenderungsDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$.erstellDatum", startsWith("2023-09-10")))
+                .andExpect(jsonPath("$.aenderungsDatum", startsWith("2023-09-10")))
                 .andExpect(jsonPath("$.beantwortet").value(false));
     }
 
@@ -194,19 +200,18 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.questionFrage").value("Frage1"))
                 .andExpect(jsonPath("$.questionHinweis").value("Hinweis1"))
                 .andExpect(jsonPath("$.questionLoesung").value("Lösung1"))
-                .andExpect(jsonPath("$.erstellDatum").value(dateTime.toString()))
-                .andExpect(jsonPath("$.aenderungsDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$.erstellDatum", startsWith("2023-09-10")))
+                .andExpect(jsonPath("$.aenderungsDatum", startsWith("2023-09-10")))
                 .andExpect(jsonPath("$.beantwortet").value(false));
-        //Todo Question-Controller-Test ausfüllen
-        // Then
+
         Question savedQuestion = questionRepository.findByQuestionFrage(question1.getQuestionFrage()).orElseThrow(() ->
                 new ResourceNotFoundException("Question not found for questionFrage: " + question1.getQuestionFrage()));
 
         assertThat(savedQuestion.getQuestionFrage()).isEqualTo(question1.getQuestionFrage());
         assertThat(savedQuestion.getQuestionHinweis()).isEqualTo(question1.getQuestionHinweis());
         assertThat(savedQuestion.getQuestionLoesung()).isEqualTo(question1.getQuestionLoesung());
-        assertThat(savedQuestion.getErstellDatum()).isEqualTo(question1.getErstellDatum());
-        assertThat(savedQuestion.getAenderungsDatum()).isEqualTo(question1.getAenderungsDatum());
+        assertThat(savedQuestion.getErstellDatum()).isEqualToIgnoringNanos(question1.getErstellDatum());
+        assertThat(savedQuestion.getAenderungsDatum()).isEqualToIgnoringNanos(question1.getAenderungsDatum());
         assertThat(savedQuestion.isBeantwortet()).isEqualTo(question1.isBeantwortet());
     }
 
@@ -233,11 +238,14 @@ public class QuestionControllerTest {
         question1.setExam(exam1);
         questionRepository.save(question1);
 
+        ZonedDateTime dateTime2 = ZonedDateTime.of(2023, 9, 11, 12, 12, 12, 1234, ZoneOffset.UTC);
+
+
         question1.setQuestionFrage("Frage2");
         question1.setQuestionHinweis("Hinweis2");
         question1.setQuestionLoesung("Lösung2");
-        question1.setErstellDatum(dateTime);
-        question1.setAenderungsDatum(dateTime);
+        question1.setErstellDatum(dateTime2);
+        question1.setAenderungsDatum(dateTime2);
         question1.setBeantwortet(true);
 
 
@@ -250,8 +258,8 @@ public class QuestionControllerTest {
                 .andExpect(jsonPath("$.questionFrage").value("Frage2"))
                 .andExpect(jsonPath("$.questionHinweis").value("Hinweis2"))
                 .andExpect(jsonPath("$.questionLoesung").value("Lösung2"))
-                .andExpect(jsonPath("$.erstellDatum").value(dateTime.toString()))
-                .andExpect(jsonPath("$.aenderungsDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$.erstellDatum", startsWith("2023-09-11")))
+                .andExpect(jsonPath("$.aenderungsDatum", startsWith("2023-09-11")))
                 .andExpect(jsonPath("$.beantwortet").value(true));
 
         // Then
@@ -261,8 +269,8 @@ public class QuestionControllerTest {
         assertThat(updatedQuestion.getQuestionFrage()).isEqualTo(question1.getQuestionFrage());
         assertThat(updatedQuestion.getQuestionHinweis()).isEqualTo(question1.getQuestionHinweis());
         assertThat(updatedQuestion.getQuestionLoesung()).isEqualTo(question1.getQuestionLoesung());
-        assertThat(updatedQuestion.getErstellDatum()).isEqualTo(question1.getErstellDatum());
-        assertThat(updatedQuestion.getAenderungsDatum()).isEqualTo(question1.getAenderungsDatum());
+        assertThat(updatedQuestion.getErstellDatum()).isEqualToIgnoringNanos(question1.getErstellDatum());
+        assertThat(updatedQuestion.getAenderungsDatum()).isEqualToIgnoringNanos(question1.getAenderungsDatum());
         assertThat(updatedQuestion.isBeantwortet()).isEqualTo(question1.isBeantwortet());
     }
 

@@ -21,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
@@ -45,11 +47,12 @@ public class OtherTests {
     @LocalServerPort
     private int port;
 
-    static LocalDateTime dateTime;
+    static ZonedDateTime dateTime;
 
     @BeforeAll
     static void beforeAllTests() {
-        dateTime = LocalDateTime.of(2023, 9, 7, 13, 45, 30);
+        dateTime = ZonedDateTime.of(2023, 9, 10, 12, 12, 12, 1234, ZoneOffset.UTC);
+
 
     }
 

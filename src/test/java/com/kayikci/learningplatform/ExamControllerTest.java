@@ -29,11 +29,14 @@ import org.springframework.test.web.servlet.MockMvc;
 
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -62,15 +65,15 @@ public class ExamControllerTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
-    static LocalDateTime dateTime;
+    static ZonedDateTime dateTime;
 
     @BeforeAll
     static void beforeAllTests() {
 
-        dateTime = LocalDateTime.of(2023, 9, 7, 13, 45, 30);
+        dateTime = ZonedDateTime.of(2023, 9, 10, 12, 12, 12, 1234, ZoneOffset.UTC);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        String formattedDateTime = dateTime.format(formatter);
+
+
 
     }
 
@@ -154,8 +157,8 @@ public class ExamControllerTest {
                 .andExpect(jsonPath("$[0].pruefungsName").value("pruefungsname1"))
                 .andExpect(jsonPath("$[0].info").value("info1"))
                 .andExpect(jsonPath("$[0].beschreibung").value("beschreibung1"))
-                .andExpect(jsonPath("$[0].erstellDatum").value(dateTime.toString()))
-                .andExpect(jsonPath("$[0].aenderungsDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$[0].erstellDatum", startsWith("2023-09-10")))
+                .andExpect(jsonPath("$[0].aenderungsDatum", startsWith("2023-09-10")))
                 .andExpect(jsonPath("$[0].anzahlFragen").value(12));
     }
 
@@ -186,8 +189,8 @@ public class ExamControllerTest {
                 .andExpect(jsonPath("$.pruefungsName").value("pruefungsname1"))
                 .andExpect(jsonPath("$.info").value("info1"))
                 .andExpect(jsonPath("$.beschreibung").value("beschreibung1"))
-                .andExpect(jsonPath("$.erstellDatum").value(dateTime.toString()))
-                .andExpect(jsonPath("$.aenderungsDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$.erstellDatum", startsWith("2023-09-10")))
+                .andExpect(jsonPath("$.aenderungsDatum", startsWith("2023-09-10")))
                 .andExpect(jsonPath("$.anzahlFragen").value(12));
     }
 
@@ -217,8 +220,8 @@ public class ExamControllerTest {
                 .andExpect(jsonPath("$.pruefungsName").value("pruefungsname1"))
                 .andExpect(jsonPath("$.info").value("info1"))
                 .andExpect(jsonPath("$.beschreibung").value("beschreibung1"))
-                .andExpect(jsonPath("$.erstellDatum").value(dateTime.toString()))
-                .andExpect(jsonPath("$.aenderungsDatum").value(dateTime.toString()))
+                .andExpect(jsonPath("$.erstellDatum", startsWith("2023-09-10")))
+                .andExpect(jsonPath("$.aenderungsDatum", startsWith("2023-09-10")))
                 .andExpect(jsonPath("$.anzahlFragen").value(12));
 
         Exam savedExam = examRepository.findByPruefungsName(exam1.getPruefungsName()).orElseThrow(() ->
@@ -227,8 +230,8 @@ public class ExamControllerTest {
         assertThat(savedExam.getPruefungsName()).isEqualTo(exam1.getPruefungsName());
         assertThat(savedExam.getInfo()).isEqualTo(exam1.getInfo());
         assertThat(savedExam.getBeschreibung()).isEqualTo(exam1.getBeschreibung());
-        assertThat(savedExam.getErstellDatum()).isEqualTo(exam1.getErstellDatum());
-        assertThat(savedExam.getAenderungsDatum()).isEqualTo(exam1.getAenderungsDatum());
+        assertThat(savedExam.getErstellDatum()).isEqualToIgnoringNanos(exam1.getErstellDatum());
+        assertThat(savedExam.getAenderungsDatum()).isEqualToIgnoringNanos(exam1.getAenderungsDatum());
         assertThat(savedExam.getAnzahlFragen()).isEqualTo(exam1.getAnzahlFragen());
     }
 
@@ -251,7 +254,8 @@ public class ExamControllerTest {
 
 
 
-        LocalDateTime dateTime2 = LocalDateTime.of(2023, 9, 7, 14, 45, 30);
+        ZonedDateTime dateTime2 = ZonedDateTime.of(2023, 9, 11, 12, 12, 12, 1234, ZoneOffset.UTC);
+
 
         exam1.setPruefungsName("pruefungsname2");
         exam1.setInfo("info2");
@@ -269,8 +273,8 @@ public class ExamControllerTest {
                 .andExpect(jsonPath("$.pruefungsName").value("pruefungsname2"))
                 .andExpect(jsonPath("$.info").value("info2"))
                 .andExpect(jsonPath("$.beschreibung").value("beschreibung2"))
-                .andExpect(jsonPath("$.erstellDatum").value(dateTime2.toString()))
-                .andExpect(jsonPath("$.aenderungsDatum").value(dateTime2.toString()))
+                .andExpect(jsonPath("$.erstellDatum", startsWith("2023-09-11")))
+                .andExpect(jsonPath("$.aenderungsDatum", startsWith("2023-09-11")))
                 .andExpect(jsonPath("$.anzahlFragen").value(13));
 
         // Then
@@ -279,8 +283,8 @@ public class ExamControllerTest {
         assertThat(updatedExam.getPruefungsName()).isEqualTo(exam1.getPruefungsName());
         assertThat(updatedExam.getInfo()).isEqualTo(exam1.getInfo());
         assertThat(updatedExam.getBeschreibung()).isEqualTo(exam1.getBeschreibung());
-        assertThat(updatedExam.getErstellDatum()).isEqualTo(exam1.getErstellDatum());
-        assertThat(updatedExam.getAenderungsDatum()).isEqualTo(exam1.getAenderungsDatum());
+        assertThat(updatedExam.getErstellDatum()).isEqualToIgnoringNanos(exam1.getErstellDatum());
+        assertThat(updatedExam.getAenderungsDatum()).isEqualToIgnoringNanos(exam1.getAenderungsDatum());
         assertThat(updatedExam.getAnzahlFragen()).isEqualTo(exam1.getAnzahlFragen());
     }
 

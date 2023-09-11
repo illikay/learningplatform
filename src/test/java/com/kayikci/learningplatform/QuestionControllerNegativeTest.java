@@ -30,6 +30,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,11 +64,12 @@ public class QuestionControllerNegativeTest {
     @Autowired
     private QuestionRepository questionRepository;
 
-    static LocalDateTime dateTime;
+    static ZonedDateTime dateTime;
 
     @BeforeAll
     static void beforeAllTests() {
-        dateTime = LocalDateTime.of(2023, 9, 7, 13, 45, 30);
+        dateTime = ZonedDateTime.of(2023, 9, 10, 12, 12, 12, 1234, ZoneOffset.UTC);
+
 
     }
 
@@ -76,6 +79,8 @@ public class QuestionControllerNegativeTest {
         examRepository.deleteAll();
         tokenRepository.deleteAll();
         userRepository.deleteAll();
+
+
 
 
     }

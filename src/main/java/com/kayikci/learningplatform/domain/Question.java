@@ -1,15 +1,16 @@
 package com.kayikci.learningplatform.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.kayikci.learningplatform.user.User;
+
+import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,8 +19,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Length;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
+import java.time.ZonedDateTime;
 
 @Data
 @Builder
@@ -44,15 +45,15 @@ public class Question {
 
 
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime erstellDatum;
+    @JsonSerialize(using = CustomZonedDateTimeSerializer.class)
+    @JsonDeserialize(using = CustomZonedDateTimeDeserializer.class)
+    private ZonedDateTime erstellDatum;
 
 
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime aenderungsDatum;
+    @JsonSerialize(using = CustomZonedDateTimeSerializer.class)
+    @JsonDeserialize(using = CustomZonedDateTimeDeserializer.class)
+    private ZonedDateTime aenderungsDatum;
 
     private boolean isBeantwortet;
 
@@ -63,7 +64,7 @@ public class Question {
     @JsonIgnore
     private Exam exam;
 
-    public Question(String questionFrage, String questionHinweis, String questionLoesung, LocalDateTime erstellDatum, LocalDateTime aenderungsDatum, boolean isBeantwortet) {
+    public Question(String questionFrage, String questionHinweis, String questionLoesung, ZonedDateTime erstellDatum, ZonedDateTime aenderungsDatum, boolean isBeantwortet) {
 
         this.questionFrage = questionFrage;
         this.questionHinweis = questionHinweis;
