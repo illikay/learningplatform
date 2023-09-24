@@ -6,8 +6,8 @@ plugins {
     `java-library`
     `maven-publish`
     jacoco
-    id("io.freefair.lombok") version "8.1.0"
-    id ("com.github.ben-manes.versions") version "0.47.0"
+    id("io.freefair.lombok") version "8.3"
+    id ("com.github.ben-manes.versions") version "0.48.0"
 
 }
 
@@ -38,21 +38,21 @@ repositories {
 }
 
 dependencies {
-    api("org.springframework.boot:spring-boot-starter-data-jpa:3.1.2")
-    api("org.springframework.boot:spring-boot-starter-web:3.1.2")
-    api("org.springframework.boot:spring-boot-starter-security:3.1.2")
+    api("org.springframework.boot:spring-boot-starter-data-jpa:3.1.3")
+    api("org.springframework.boot:spring-boot-starter-web:3.1.3")
+    api("org.springframework.boot:spring-boot-starter-security:3.1.3")
     api("org.projectlombok:lombok:1.18.28")
     api("io.jsonwebtoken:jjwt-api:0.11.5")
     api("io.jsonwebtoken:jjwt-impl:0.11.5")
     api("io.jsonwebtoken:jjwt-jackson:0.11.5")
-    api("org.springframework.boot:spring-boot-starter-validation:3.1.2")
-    api("org.yaml:snakeyaml:2.1")
+    api("org.springframework.boot:spring-boot-starter-validation:3.1.3")
+    api("org.yaml:snakeyaml:2.2")
     runtimeOnly("com.mysql:mysql-connector-j:8.1.0")
-    testImplementation("org.testcontainers:junit-jupiter:1.18.3")
-    testImplementation("org.testcontainers:mysql:1.18.3")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.2")
-    testImplementation("org.springframework.security:spring-security-test:6.1.2")
-    testImplementation("io.rest-assured:rest-assured:5.3.1")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.0")
+    testImplementation("org.testcontainers:mysql:1.19.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.3")
+    testImplementation("org.springframework.security:spring-security-test:6.1.3")
+    testImplementation("io.rest-assured:rest-assured:5.3.2")
     testImplementation("org.hamcrest:hamcrest-all:1.3")
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")

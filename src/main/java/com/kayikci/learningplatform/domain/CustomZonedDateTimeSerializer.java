@@ -5,12 +5,16 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class CustomZonedDateTimeSerializer extends JsonSerializer<ZonedDateTime> {
     @Override
     public void serialize(ZonedDateTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeString(value.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+        String formattedDateTime = value.withZoneSameInstant(ZoneId.of("UTC"))
+                .format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+        gen.writeString(formattedDateTime);
     }
+
 }
