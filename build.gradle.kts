@@ -4,6 +4,7 @@
 
 plugins {
     java
+    application
     `java-library`
     `maven-publish`
     jacoco
@@ -12,11 +13,6 @@ plugins {
     id ("com.heroku.sdk.heroku-gradle") version "3.0.0"
 
 }
-
-
-
-
-
 
 
 tasks.named<Test>("test") {
@@ -83,7 +79,13 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(19))
     }
+    sourceCompatibility = JavaVersion.VERSION_19
+    targetCompatibility = JavaVersion.VERSION_19
 
+}
+
+application {
+    mainClass.set("com.kayikci.learningplatform.LearningplatformApplication")
 }
 
 
