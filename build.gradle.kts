@@ -3,13 +3,19 @@
  */
 
 plugins {
+    java
     `java-library`
     `maven-publish`
     jacoco
     id("io.freefair.lombok") version "8.3"
     id ("com.github.ben-manes.versions") version "0.48.0"
+    id ("com.heroku.sdk.heroku-gradle") version "3.0.0"
 
 }
+
+
+
+
 
 
 
@@ -72,6 +78,13 @@ dependencies {
 group = "com.kayikci"
 version = "0.0.1-SNAPSHOT"
 description = "learningplatform"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(19))
+    }
+
+}
 
 
 
