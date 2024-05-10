@@ -8,6 +8,7 @@ import com.kayikci.learningplatform.repository.QuestionRepository;
 import com.kayikci.learningplatform.exception.ResourceNotFoundException;
 import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,26 +17,14 @@ import java.util.Optional;
 
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 @RestController
+@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class QuestionController {
 
-
-    private ExamRepository examRepository;
-
+    private final ExamRepository examRepository;
     private final UserRepository userRepository;
-
-    private QuestionRepository questionRepository;
-
-
+    private final QuestionRepository questionRepository;
     private final JwtService jwtService;
-
-    public QuestionController(ExamRepository examRepository, UserRepository userRepository, QuestionRepository questionRepository, JwtService jwtService) {
-        this.examRepository = examRepository;
-        this.userRepository = userRepository;
-        this.questionRepository = questionRepository;
-        this.jwtService = jwtService;
-    }
-
 
     @GetMapping("/exam/{examId}/questions")
     @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")

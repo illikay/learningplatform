@@ -7,6 +7,7 @@ import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.repository.QuestionRepository;
 import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,28 +15,14 @@ import org.springframework.web.bind.annotation.*;
 
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 @RestController
+@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class ExamController {
 
-    @Autowired
     private final ExamRepository examRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
-
-
-
-    public ExamController(ExamRepository examRepository, QuestionRepository questionRepository, UserRepository userRepository, JwtService jwtService) {
-        this.examRepository = examRepository;
-        this.questionRepository = questionRepository;
-        this.userRepository = userRepository;
-        this.jwtService = jwtService;
-
-
-    }
-
-
-
 
 
     @GetMapping("/exam")

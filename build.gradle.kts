@@ -10,12 +10,14 @@ plugins {
     `java-library`
     `maven-publish`
     jacoco
-    id("io.freefair.lombok") version "8.3"
-    id ("com.github.ben-manes.versions") version "0.48.0"
-    id ("com.heroku.sdk.heroku-gradle") version "3.0.0"
+    id("io.freefair.lombok") version "8.6"
+    id ("com.github.ben-manes.versions") version "0.51.0"
     id ("com.coditory.manifest") version "0.2.6"
+    id("org.springframework.boot") version "3.2.5"
 
 }
+
+apply(plugin = "io.spring.dependency-management")
 
 
 tasks.named<Test>("test") {
@@ -43,34 +45,34 @@ repositories {
 }
 
 dependencies {
-    api("org.springframework.boot:spring-boot-starter-data-jpa:3.1.3")
-    api("org.springframework.boot:spring-boot-starter-web:3.1.3")
-    api("org.springframework.boot:spring-boot-starter-security:3.1.3")
-    api("org.projectlombok:lombok:1.18.28")
+    api("org.springframework.boot:spring-boot-starter-data-jpa:3.2.5")
+    api("org.springframework.boot:spring-boot-starter-web:3.2.5")
+    api("org.springframework.boot:spring-boot-starter-security:3.2.5")
+    api("org.projectlombok:lombok:1.18.32")
     api("io.jsonwebtoken:jjwt-api:0.11.5")
     api("io.jsonwebtoken:jjwt-impl:0.11.5")
     api("io.jsonwebtoken:jjwt-jackson:0.11.5")
-    api("org.springframework.boot:spring-boot-starter-validation:3.1.3")
+    api("org.springframework.boot:spring-boot-starter-validation:3.2.5")
     api("org.yaml:snakeyaml:2.2")
-    runtimeOnly("com.mysql:mysql-connector-j:8.1.0")
-    testImplementation("org.testcontainers:junit-jupiter:1.19.0")
-    testImplementation("org.testcontainers:mysql:1.19.0")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.3")
-    testImplementation("org.springframework.security:spring-security-test:6.1.3")
-    testImplementation("io.rest-assured:rest-assured:5.3.2")
+    runtimeOnly("com.mysql:mysql-connector-j:8.4.0")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
+    testImplementation("org.testcontainers:mysql:1.19.8")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.5")
+    testImplementation("org.springframework.security:spring-security-test:6.2.4")
+    testImplementation("io.rest-assured:rest-assured:5.4.0")
     testImplementation("org.hamcrest:hamcrest-all:1.3")
 
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.1")
 
 
-    implementation("org.springframework.boot:spring-boot-starter-logging:3.1.3")
+    implementation("org.springframework.boot:spring-boot-starter-logging:3.2.5")
 
 
 
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0-M1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.0-M1")
 
 }
 
@@ -80,10 +82,10 @@ description = "learningplatform"
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(19))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
-    sourceCompatibility = JavaVersion.VERSION_19
-    targetCompatibility = JavaVersion.VERSION_19
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 
 }
 
