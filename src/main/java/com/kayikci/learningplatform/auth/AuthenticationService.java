@@ -100,4 +100,8 @@ public class AuthenticationService {
         });
         tokenRepository.saveAll(validUserTokens);
     }
+
+    public boolean checkAccountExists(String email) {
+       return userRepository.existsByEmail(email);
+    }
 }

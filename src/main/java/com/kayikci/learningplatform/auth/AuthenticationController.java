@@ -2,57 +2,72 @@ package com.kayikci.learningplatform.auth;
 
 import com.kayikci.learningplatform.config.JwtService;
 import com.kayikci.learningplatform.config.LogoutService;
-
-import com.kayikci.learningplatform.exception.ResourceNotFoundException;
-import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import java.security.SignatureException;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthenticationController {
 
-
-  private final AuthenticationService authenticationService;
-  private final LogoutService logoutService;
-  private final JwtService jwtService;
-  private final UserRepository userRepository;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
 
+    private final AuthenticationService authenticationService;
+    private final LogoutService logoutService;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
 
 
-
-  @PostMapping("/usermanagement/register")
-  public ResponseEntity<AuthenticationResponse> register(
-          @Validated @RequestBody RegisterRequest request) {
-    return ResponseEntity.ok(authenticationService.register(request));
-  }
-
-
-  @PostMapping("/usermanagement/authenticate")
-  public ResponseEntity<AuthenticationResponse> authenticate(
-          @Validated @RequestBody AuthenticationRequest request
-  ) {
-    return ResponseEntity.ok(authenticationService.authenticate(request));
-  }
+    @PostMapping("/usermanagement/register")
+    public ResponseEntity<AuthenticationResponse> register(
+            @Validated @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authenticationService.register(request));
+    }
 
 
+    @PostMapping("/usermanagement/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticate(
+            @Validated @RequestBody AuthenticationRequest request
+    ) {
+        return ResponseEntity.ok(authenticationService.authenticate(request));
+    }
+
+    @PostMapping("usermanagement/check-account")
+    public ResponseEntity<Boolean> checkAccountExists(@Validated @RequestBody CheckAccountRequest checkAccountRequest) {
+        if (authenticationService.checkAccountExists(checkAccountRequest.getEmail())) {
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
+    }
+
+    @PostMapping("usermanagement/verify")
+    public ResponseEntity<VerifyResponse> verifyToken(@RequestHeader("Authorization") String token) {
+        String username = "";
+        try {
+            username = jwtService.extractUsernameForController(token);
+        }
+        catch (MalformedJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new VerifyResponse("Invalid token"));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new VerifyResponse("An error occurred"));
+        }
+        if (jwtService.isTokenValidForUser(token, username)){
+            return ResponseEntity.ok(new VerifyResponse("success"));
+        }
+        return ResponseEntity.ok(new VerifyResponse("error"));
+    }
 
  /* @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {

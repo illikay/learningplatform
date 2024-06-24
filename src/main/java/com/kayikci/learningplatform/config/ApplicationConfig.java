@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableMethodSecurity
@@ -21,6 +23,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
   private final UserRepository repository;
+
+  @Bean
+  public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        // Erlaubt CORS für alle Routen (/**) von der Origin http://localhost:3000
+        registry.addMapping("/**").allowedOrigins("http://localhost:3000");
+      }
+    };
+  }
 
   @Bean
   public UserDetailsService userDetailsService() {

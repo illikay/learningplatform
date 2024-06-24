@@ -1,39 +1,25 @@
 package com.kayikci.learningplatform.data;
 
 import com.kayikci.learningplatform.auth.AuthenticationService;
+import com.kayikci.learningplatform.auth.RegisterRequest;
 import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.repository.QuestionRepository;
 import com.kayikci.learningplatform.user.UserRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@RequiredArgsConstructor
 public class DataLoader {
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     private final ExamRepository examRepository;
     private final QuestionRepository questionRepository;
-
     private final UserRepository userRepository;
-
-    private final AuthenticationService service;
-
-
-
-
-
-    public DataLoader(ExamRepository examRepository, QuestionRepository questionRepository, UserRepository userRepository, AuthenticationService service) {
-        this.examRepository = examRepository;
-        this.questionRepository = questionRepository;
-        this.userRepository = userRepository;
-        this.service = service;
-
-    }
+    private final AuthenticationService authenticationService;
 
 
     @PostConstruct
@@ -45,18 +31,14 @@ public class DataLoader {
         userRepository.deleteAll();*/
 
 
+        RegisterRequest user1 = new RegisterRequest("vorname1", "nachname1", "asdf@asdf.de", "Ilkay0101!");
 
-       /* RegisterRequest user1 = new RegisterRequest("vorname1", "nachname1", "email1" , "password1");
-        RegisterRequest user2 = new RegisterRequest("vorname2", "nachname2", "email2" , "password2");
-        RegisterRequest user3 = new RegisterRequest("vorname3", "nachname3", "email3" , "password3");
-
-        service.register(user1);
-        service.register(user2);
-        service.register(user3);
+        authenticationService.register(user1);
 
 
 
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+
+        /*SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
         String dateString = format.format(new Date());
 
@@ -87,9 +69,8 @@ public class DataLoader {
         question2.setExam(exam1);
         questionRepository.save(question1);
         questionRepository.save(question2);
-
-
-
 */
+
+
     }
 }
