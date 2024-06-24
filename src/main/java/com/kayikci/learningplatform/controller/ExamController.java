@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 @RestController
 @RequiredArgsConstructor
@@ -27,12 +29,12 @@ public class ExamController {
 
     @GetMapping("/exam")
     @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
-    public ResponseEntity<Iterable<Exam>> getAllExamsByUserId(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<Exam>> getAllExamsByUserId(@RequestHeader("Authorization") String token) {
         String email = jwtService.extractUsernameForController(token);
         User user = userRepository.findByEmail(email).orElseThrow(() ->
             new ResourceNotFoundException("User not found for email:" + email));
 
-        Iterable<Exam> exams = examRepository.findByUserId(user.getId());
+        List<Exam> exams = examRepository.findByUserId(user.getId());
 
         return ResponseEntity.ok(exams);
     }

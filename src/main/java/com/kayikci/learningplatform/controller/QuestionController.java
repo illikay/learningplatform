@@ -2,6 +2,7 @@ package com.kayikci.learningplatform.controller;
 
 
 import com.kayikci.learningplatform.config.JwtService;
+import com.kayikci.learningplatform.domain.Exam;
 import com.kayikci.learningplatform.repository.ExamRepository;
 import com.kayikci.learningplatform.domain.Question;
 import com.kayikci.learningplatform.repository.QuestionRepository;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
@@ -28,41 +30,41 @@ public class QuestionController {
 
     @GetMapping("/exam/{examId}/questions")
     @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
-    public Iterable<Question> getAllQuestionsByExamId(@RequestHeader("Authorization") String token , @PathVariable(value = "examId") Long examId) {
-
-        return questionRepository.findByExamId(examId);
+    public ResponseEntity<List<Question>> getAllQuestionsByExamId(@RequestHeader("Authorization") String token , @PathVariable(value = "examId") Long examId) {
+        List<Question> questions = questionRepository.findByExamId(examId);
+        return ResponseEntity.ok(questions);
     }
 
     @GetMapping("/exam/{examId}/questions/{questionId}")
     @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
-    Optional<Question> getQuestionById(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
+    ResponseEntity<Question> getQuestionById(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                        @PathVariable(value = "questionId") Long questionId) {
-        return questionRepository.findByIdAndExamId(questionId, examId);
+        Question question = questionRepository.findByIdAndExamId(questionId, examId).orElseThrow(() -> new ResourceNotFoundException("Exam not found for examId: " + examId));
+        return ResponseEntity.ok(question);
     }
 
 
     @PostMapping("/exam/{examId}/questions")
     @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
-    public Question createQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
+    public ResponseEntity<Question> createQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                    @RequestBody Question question) {
 
-
-        return examRepository.findById(examId).map(oldExam -> {
+        Question createdQuestion = examRepository.findById(examId).map(oldExam -> {
             question.setExam(oldExam);
             return questionRepository.save(question);
         }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
+        return ResponseEntity.ok(createdQuestion);
     }
 
     @PutMapping("/exam/{examId}/questions/{questionId}")
     @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
-    public Question updateQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
+    public ResponseEntity<Question> updateQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                    @PathVariable(value = "questionId") Long questionId,
                                    @RequestBody Question questionRequest) {
         if (!examRepository.existsById(examId)) {
             throw new ResourceNotFoundException("ExamId " + examId + " not found");
         }
-
-        return questionRepository.findById(questionId).map(oldQuestion -> {
+        Question updatedQuestion = questionRepository.findById(questionId).map(oldQuestion -> {
             oldQuestion.setQuestionFrage(questionRequest.getQuestionFrage());
             oldQuestion.setQuestionHinweis(questionRequest.getQuestionHinweis());
             oldQuestion.setQuestionLoesung(questionRequest.getQuestionLoesung());
@@ -71,6 +73,7 @@ public class QuestionController {
             oldQuestion.setBeantwortet(questionRequest.isBeantwortet());
             return questionRepository.save(oldQuestion);
         }).orElseThrow(() -> new ResourceNotFoundException("QuestionId " + questionId + "not found"));
+        return ResponseEntity.ok(updatedQuestion);
     }
 
     @DeleteMapping("/exam/{examId}/questions/{questionId}")

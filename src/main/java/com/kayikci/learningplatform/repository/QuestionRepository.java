@@ -4,10 +4,11 @@ import com.kayikci.learningplatform.domain.Exam;
 import com.kayikci.learningplatform.domain.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    Iterable<Question> findByExamId(Long examId);
+    List<Question> findByExamId(Long examId);
 
     //Iterable<Exam> findByUserId(Long userId);
 
