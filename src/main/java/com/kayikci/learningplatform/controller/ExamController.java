@@ -8,10 +8,10 @@ import com.kayikci.learningplatform.repository.QuestionRepository;
 import com.kayikci.learningplatform.user.User;
 import com.kayikci.learningplatform.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.time.ZonedDateTime;
 
 import java.util.List;
 
@@ -57,6 +57,8 @@ public class ExamController {
         String email = jwtService.extractUsernameForController(token);
         return userRepository.findByEmail(email).map(oldUser -> {
             exam.setUser(oldUser);
+            exam.setErstellDatum(ZonedDateTime.now());
+            exam.setAenderungsDatum(ZonedDateTime.now());
             examRepository.save(exam);
             return ResponseEntity.ok(exam);
         }).orElseThrow(() -> new ResourceNotFoundException("Username " + email + " not found"));
@@ -73,7 +75,7 @@ public class ExamController {
                     oldExam.setInfo(newExam.getInfo());
                     oldExam.setBeschreibung(newExam.getBeschreibung());
                     oldExam.setErstellDatum(newExam.getErstellDatum());
-                    oldExam.setAenderungsDatum(newExam.getAenderungsDatum());
+                    oldExam.setAenderungsDatum(ZonedDateTime.now());
                     oldExam.setAnzahlFragen(newExam.getAnzahlFragen());
                     return examRepository.save(oldExam);
                 }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
