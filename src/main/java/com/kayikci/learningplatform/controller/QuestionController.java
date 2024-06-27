@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,11 @@ public class QuestionController {
     @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public ResponseEntity<List<Question>> getAllQuestionsByExamId(@RequestHeader("Authorization") String token , @PathVariable(value = "examId") Long examId) {
         List<Question> questions = questionRepository.findByExamId(examId);
+        int anzahlQuestions = questions.size();
+        examRepository.findById(examId).map(oldExam -> {
+            oldExam.setAnzahlFragen(anzahlQuestions);
+            return examRepository.save(oldExam);
+        });
         return ResponseEntity.ok(questions);
     }
 
@@ -48,8 +54,19 @@ public class QuestionController {
     @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public ResponseEntity<Question> createQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                    @RequestBody Question question) {
+        //Abfrage ob Frage beanwortet ist oder nicht
+        if (question.getQuestionLoesung().isEmpty() || question.getQuestionLoesung() == null){
+            question.setBeantwortet(false);
+        } else {
+            question.setBeantwortet(true);
+        }
 
         Question createdQuestion = examRepository.findById(examId).map(oldExam -> {
+            int anzahlQuestions = oldExam.getAnzahlFragen();
+            oldExam.setAnzahlFragen(anzahlQuestions+1);
+            examRepository.save(oldExam);
+            question.setErstellDatum(ZonedDateTime.now());
+            question.setAenderungsDatum(ZonedDateTime.now());
             question.setExam(oldExam);
             return questionRepository.save(question);
         }).orElseThrow(() -> new ResourceNotFoundException("ExamId " + examId + " not found"));
@@ -64,12 +81,18 @@ public class QuestionController {
         if (!examRepository.existsById(examId)) {
             throw new ResourceNotFoundException("ExamId " + examId + " not found");
         }
+        //Abfrage ob Frage beanwortet ist oder nicht
+        if (questionRequest.getQuestionLoesung().isEmpty() || questionRequest.getQuestionLoesung() == null){
+            questionRequest.setBeantwortet(false);
+        } else {
+            questionRequest.setBeantwortet(true);
+        }
         Question updatedQuestion = questionRepository.findById(questionId).map(oldQuestion -> {
             oldQuestion.setQuestionFrage(questionRequest.getQuestionFrage());
             oldQuestion.setQuestionHinweis(questionRequest.getQuestionHinweis());
             oldQuestion.setQuestionLoesung(questionRequest.getQuestionLoesung());
             oldQuestion.setErstellDatum(questionRequest.getErstellDatum());
-            oldQuestion.setAenderungsDatum(questionRequest.getAenderungsDatum());
+            oldQuestion.setAenderungsDatum(ZonedDateTime.now());
             oldQuestion.setBeantwortet(questionRequest.isBeantwortet());
             return questionRepository.save(oldQuestion);
         }).orElseThrow(() -> new ResourceNotFoundException("QuestionId " + questionId + "not found"));
@@ -80,6 +103,12 @@ public class QuestionController {
     @PreAuthorize("@jwtService.isTokenValidForUser(#token, authentication.name)")
     public ResponseEntity<?> deleteQuestion(@RequestHeader("Authorization") String token, @PathVariable(value = "examId") Long examId,
                                             @PathVariable(value = "questionId") Long questionId) {
+
+        examRepository.findById(examId).map(oldExam -> {
+            int anzahlQuestions = oldExam.getAnzahlFragen();
+            oldExam.setAnzahlFragen(anzahlQuestions-1);
+            return examRepository.save(oldExam);
+        });
         return questionRepository.findByIdAndExamId(questionId, examId).map(oldQuestion -> {
             questionRepository.delete(oldQuestion);
             return ResponseEntity.noContent().build();

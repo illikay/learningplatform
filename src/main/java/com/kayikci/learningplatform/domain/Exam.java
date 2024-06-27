@@ -40,7 +40,6 @@ public class Exam {
 
     @NotBlank
     @Length(max = 20)
-    @Column(unique = true)
     private String pruefungsName;
     @Length(max = 50)
     private String info;

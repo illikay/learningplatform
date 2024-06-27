@@ -35,7 +35,6 @@ public class Question {
     private Long id;
 
     @Length(max = 50)
-    @Column(unique = true)
     private String questionFrage;
     @Length(max = 50)
     private String  questionHinweis;
